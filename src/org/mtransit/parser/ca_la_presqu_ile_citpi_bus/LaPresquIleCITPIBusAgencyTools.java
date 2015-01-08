@@ -106,9 +106,17 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
 	private static final String DIRECTION_REPLACEMENT = "";
 
+	private static final Pattern SECTEUR = Pattern.compile("(secteur[s]? )", Pattern.CASE_INSENSITIVE);
+	private static final String SECTEUR_REPLACEMENT = "";
+
+	private static final Pattern SERVICE = Pattern.compile("(service) ([a|p]m)", Pattern.CASE_INSENSITIVE);
+	private static final String SERVICE_REPLACEMENT = "$2";
+
 	@Override
 	public String cleanTripHeadsign(String tripHeadsign) {
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
+		tripHeadsign = SECTEUR.matcher(tripHeadsign).replaceAll(SECTEUR_REPLACEMENT);
+		tripHeadsign = SERVICE.matcher(tripHeadsign).replaceAll(SERVICE_REPLACEMENT);
 		return MSpec.cleanLabelFR(tripHeadsign);
 	}
 
