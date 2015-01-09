@@ -51,6 +51,14 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return MSpec.cleanLabel(routeLongName);
 	}
 
+	@Override
+	public String getRouteShortName(GRoute gRoute) {
+		if (gRoute.route_short_name.equals("40")) {
+			return "A40";
+		}
+		return super.getRouteShortName(gRoute);
+	}
+
 	private static final String ROUTE_COLOR = "258FE8";
 
 	@Override
