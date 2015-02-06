@@ -89,7 +89,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteShortName(gRoute);
 	}
 
-	private static final String ROUTE_COLOR = "258FE8";
+	private static final String AGENCY_COLOR = "258FE8";
+
+	@Override
+	public String getAgencyColor() {
+		return AGENCY_COLOR;
+	}
 
 	@Override
 	public String getRouteColor(GRoute gRoute) {
@@ -117,7 +122,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		if ("51".equals(gRoute.route_short_name)) return "E9979B";
 		if ("61".equals(gRoute.route_short_name)) return "F58220";
 		if ("91".equals(gRoute.route_short_name)) return "007D68";
-		return ROUTE_COLOR;
+		return super.getRouteColor(gRoute);
 	}
 
 	@Override
