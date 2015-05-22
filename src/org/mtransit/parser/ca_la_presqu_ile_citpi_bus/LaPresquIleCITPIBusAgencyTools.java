@@ -9,6 +9,7 @@ import org.mtransit.parser.Utils;
 import org.mtransit.parser.gtfs.data.GCalendar;
 import org.mtransit.parser.gtfs.data.GCalendarDate;
 import org.mtransit.parser.gtfs.data.GRoute;
+import org.mtransit.parser.gtfs.data.GSpec;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.gtfs.data.GTrip;
 import org.mtransit.parser.mt.data.MAgency;
@@ -121,18 +122,20 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteColor(gRoute);
 	}
 
+	private static final String ST_LAZARE = "St-Lazare";
+	private static final String VAUDREUIL = "Vaudreuil";
+
 	@Override
-	public void setTripHeadsign(MRoute route, MTrip mTrip, GTrip gTrip) {
+	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
 		String stationName = cleanTripHeadsign(gTrip.trip_headsign);
-		int directionId = gTrip.direction_id;
 		if (mTrip.getRouteId() == 51l) {
-			if (directionId == 0) {
-				stationName = "Vaudreuil";
-			} else if (directionId == 1) {
-				stationName = "St-Lazare";
+			if (gTrip.direction_id == 0) {
+				stationName = VAUDREUIL;
+			} else if (gTrip.direction_id == 1) {
+				stationName = ST_LAZARE;
 			}
 		}
-		mTrip.setHeadsignString(stationName, directionId);
+		mTrip.setHeadsignString(stationName, gTrip.direction_id);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
