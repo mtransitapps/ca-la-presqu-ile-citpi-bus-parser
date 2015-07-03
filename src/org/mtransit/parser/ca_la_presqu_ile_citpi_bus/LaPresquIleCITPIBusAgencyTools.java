@@ -78,10 +78,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return MSpec.cleanLabel(routeLongName);
 	}
 
+	private static final String _40_RSN = "A40";
+
 	@Override
 	public String getRouteShortName(GRoute gRoute) {
-		if (gRoute.route_short_name.equals("40")) {
-			return "A40";
+		if (RSN_40.equals(gRoute.route_short_name)) {
+			return _40_RSN;
 		}
 		return super.getRouteShortName(gRoute);
 	}
@@ -93,32 +95,81 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return AGENCY_COLOR;
 	}
 
+	private static final String COLOR_00336C = "00336C";
+	private static final String COLOR_6DC8BF = "6DC8BF";
+	private static final String COLOR_1E398D = "1E398D";
+	private static final String COLOR_F15A29 = "F15A29";
+	private static final String COLOR_EC008C = "EC008C";
+	private static final String COLOR_8DC63F = "8DC63F";
+	private static final String COLOR_00ADDC = "00ADDC";
+	private static final String COLOR_878A72 = "878A72";
+	private static final String COLOR_3B6E8F = "3B6E8F";
+	private static final String COLOR_B5121B = "B5121B";
+	private static final String COLOR_576423 = "576423";
+	private static final String COLOR_FFD200 = "FFD200";
+	private static final String COLOR_F15D5E = "F15D5E";
+	private static final String COLOR_E977AF = "E977AF";
+	private static final String COLOR_8D64AA = "8D64AA";
+	private static final String COLOR_B32317 = "B32317";
+	private static final String COLOR_C2A204 = "C2A204";
+	private static final String COLOR_B26062 = "B26062";
+	private static final String COLOR_A6228E = "A6228E";
+	private static final String COLOR_B2BB1E = "B2BB1E";
+	private static final String COLOR_E9979B = "E9979B";
+	private static final String COLOR_F58220 = "F58220";
+	private static final String COLOR_007D68 = "007D68";
+
+	private static final String RSN_1 = "1";
+	private static final String RSN_2 = "2";
+	private static final String RSN_3 = "3";
+	private static final String RSN_4 = "4";
+	private static final String RSN_5 = "5";
+	private static final String RSN_6 = "6";
+	private static final String RSN_7 = "7";
+	private static final String RSN_8 = "8";
+	private static final String RSN_15 = "15";
+	private static final String RSN_21 = "21";
+	private static final String RSN_31 = "31";
+	private static final String RSN_32 = "32";
+	private static final String RSN_33 = "33";
+	private static final String RSN_35 = "35";
+	private static final String RSN_40 = "40";
+	private static final String RSN_41 = "41";
+	private static final String RSN_42 = "42";
+	private static final String RSN_43 = "43";
+	private static final String RSN_44 = "44";
+	private static final String RSN_46 = "46";
+	private static final String RSN_47 = "47";
+	private static final String RSN_51 = "51";
+	private static final String RSN_61 = "61";
+	private static final String RSN_91 = "91";
+
 	@Override
 	public String getRouteColor(GRoute gRoute) {
-		if ("1".equals(gRoute.route_short_name)) return "00336C";
-		if ("2".equals(gRoute.route_short_name)) return "6DC8BF";
-		if ("3".equals(gRoute.route_short_name)) return "1E398D";
-		if ("4".equals(gRoute.route_short_name)) return "F15A29";
-		if ("5".equals(gRoute.route_short_name)) return "EC008C";
-		if ("6".equals(gRoute.route_short_name)) return "8DC63F";
-		if ("7".equals(gRoute.route_short_name)) return "00ADDC";
-		if ("8".equals(gRoute.route_short_name)) return "878A72";
-		if ("15".equals(gRoute.route_short_name)) return "3B6E8F";
-		if ("21".equals(gRoute.route_short_name)) return "B5121B";
-		if ("31".equals(gRoute.route_short_name)) return "576423";
-		if ("32".equals(gRoute.route_short_name)) return "FFD200";
-		if ("33".equals(gRoute.route_short_name)) return "E9979B";
-		if ("35".equals(gRoute.route_short_name)) return "F15D5E";
-		if ("40".equals(gRoute.route_short_name)) return "E977AF";
-		if ("41".equals(gRoute.route_short_name)) return "8D64AA";
-		if ("42".equals(gRoute.route_short_name)) return "B32317";
-		if ("43".equals(gRoute.route_short_name)) return "C2A204";
-		if ("44".equals(gRoute.route_short_name)) return "B26062";
-		if ("46".equals(gRoute.route_short_name)) return "A6228E";
-		if ("47".equals(gRoute.route_short_name)) return "B2BB1E";
-		if ("51".equals(gRoute.route_short_name)) return "E9979B";
-		if ("61".equals(gRoute.route_short_name)) return "F58220";
-		if ("91".equals(gRoute.route_short_name)) return "007D68";
+		if (RSN_1.equals(gRoute.route_short_name)) return COLOR_00336C;
+		if (RSN_2.equals(gRoute.route_short_name)) return COLOR_6DC8BF;
+		if (RSN_3.equals(gRoute.route_short_name)) return COLOR_1E398D;
+		if (RSN_4.equals(gRoute.route_short_name)) return COLOR_F15A29;
+		if (RSN_5.equals(gRoute.route_short_name)) return COLOR_EC008C;
+		if (RSN_6.equals(gRoute.route_short_name)) return COLOR_8DC63F;
+		if (RSN_7.equals(gRoute.route_short_name)) return COLOR_00ADDC;
+		if (RSN_8.equals(gRoute.route_short_name)) return COLOR_878A72;
+		if (RSN_15.equals(gRoute.route_short_name)) return COLOR_3B6E8F;
+		if (RSN_21.equals(gRoute.route_short_name)) return COLOR_B5121B;
+		if (RSN_31.equals(gRoute.route_short_name)) return COLOR_576423;
+		if (RSN_32.equals(gRoute.route_short_name)) return COLOR_FFD200;
+		if (RSN_33.equals(gRoute.route_short_name)) return COLOR_E9979B;
+		if (RSN_35.equals(gRoute.route_short_name)) return COLOR_F15D5E;
+		if (RSN_40.equals(gRoute.route_short_name)) return COLOR_E977AF;
+		if (RSN_41.equals(gRoute.route_short_name)) return COLOR_8D64AA;
+		if (RSN_42.equals(gRoute.route_short_name)) return COLOR_B32317;
+		if (RSN_43.equals(gRoute.route_short_name)) return COLOR_C2A204;
+		if (RSN_44.equals(gRoute.route_short_name)) return COLOR_B26062;
+		if (RSN_46.equals(gRoute.route_short_name)) return COLOR_A6228E;
+		if (RSN_47.equals(gRoute.route_short_name)) return COLOR_B2BB1E;
+		if (RSN_51.equals(gRoute.route_short_name)) return COLOR_E9979B;
+		if (RSN_61.equals(gRoute.route_short_name)) return COLOR_F58220;
+		if (RSN_91.equals(gRoute.route_short_name)) return COLOR_007D68;
 		return super.getRouteColor(gRoute);
 	}
 
@@ -178,9 +229,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.cleanStopNameFR(gStopName);
 	}
 
+	private static final String ZERO = "0";
+
 	@Override
 	public String getStopCode(GStop gStop) {
-		if ("0".equals(gStop.stop_code)) {
+		if (ZERO.equals(gStop.stop_code)) {
 			return null;
 		}
 		return super.getStopCode(gStop);
