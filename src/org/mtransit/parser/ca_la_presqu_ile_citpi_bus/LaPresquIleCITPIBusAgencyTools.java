@@ -73,7 +73,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String getRouteLongName(GRoute gRoute) {
-		String routeLongName = gRoute.route_long_name;
+		String routeLongName = gRoute.getRouteLongName();
 		routeLongName = CleanUtils.SAINT.matcher(routeLongName).replaceAll(CleanUtils.SAINT_REPLACEMENT);
 		return CleanUtils.cleanLabel(routeLongName);
 	}
@@ -82,7 +82,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String getRouteShortName(GRoute gRoute) {
-		if (RSN_40.equals(gRoute.route_short_name)) {
+		if (RSN_40.equals(gRoute.getRouteShortName())) {
 			return _40_RSN;
 		}
 		return super.getRouteShortName(gRoute);
@@ -146,30 +146,30 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String getRouteColor(GRoute gRoute) {
-		if (RSN_1.equals(gRoute.route_short_name)) return COLOR_00336C;
-		if (RSN_2.equals(gRoute.route_short_name)) return COLOR_6DC8BF;
-		if (RSN_3.equals(gRoute.route_short_name)) return COLOR_1E398D;
-		if (RSN_4.equals(gRoute.route_short_name)) return COLOR_F15A29;
-		if (RSN_5.equals(gRoute.route_short_name)) return COLOR_EC008C;
-		if (RSN_6.equals(gRoute.route_short_name)) return COLOR_8DC63F;
-		if (RSN_7.equals(gRoute.route_short_name)) return COLOR_00ADDC;
-		if (RSN_8.equals(gRoute.route_short_name)) return COLOR_878A72;
-		if (RSN_15.equals(gRoute.route_short_name)) return COLOR_3B6E8F;
-		if (RSN_21.equals(gRoute.route_short_name)) return COLOR_B5121B;
-		if (RSN_31.equals(gRoute.route_short_name)) return COLOR_576423;
-		if (RSN_32.equals(gRoute.route_short_name)) return COLOR_FFD200;
-		if (RSN_33.equals(gRoute.route_short_name)) return COLOR_E9979B;
-		if (RSN_35.equals(gRoute.route_short_name)) return COLOR_F15D5E;
-		if (RSN_40.equals(gRoute.route_short_name)) return COLOR_E977AF;
-		if (RSN_41.equals(gRoute.route_short_name)) return COLOR_8D64AA;
-		if (RSN_42.equals(gRoute.route_short_name)) return COLOR_B32317;
-		if (RSN_43.equals(gRoute.route_short_name)) return COLOR_C2A204;
-		if (RSN_44.equals(gRoute.route_short_name)) return COLOR_B26062;
-		if (RSN_46.equals(gRoute.route_short_name)) return COLOR_A6228E;
-		if (RSN_47.equals(gRoute.route_short_name)) return COLOR_B2BB1E;
-		if (RSN_51.equals(gRoute.route_short_name)) return COLOR_E9979B;
-		if (RSN_61.equals(gRoute.route_short_name)) return COLOR_F58220;
-		if (RSN_91.equals(gRoute.route_short_name)) return COLOR_007D68;
+		if (RSN_1.equals(gRoute.getRouteShortName())) return COLOR_00336C;
+		if (RSN_2.equals(gRoute.getRouteShortName())) return COLOR_6DC8BF;
+		if (RSN_3.equals(gRoute.getRouteShortName())) return COLOR_1E398D;
+		if (RSN_4.equals(gRoute.getRouteShortName())) return COLOR_F15A29;
+		if (RSN_5.equals(gRoute.getRouteShortName())) return COLOR_EC008C;
+		if (RSN_6.equals(gRoute.getRouteShortName())) return COLOR_8DC63F;
+		if (RSN_7.equals(gRoute.getRouteShortName())) return COLOR_00ADDC;
+		if (RSN_8.equals(gRoute.getRouteShortName())) return COLOR_878A72;
+		if (RSN_15.equals(gRoute.getRouteShortName())) return COLOR_3B6E8F;
+		if (RSN_21.equals(gRoute.getRouteShortName())) return COLOR_B5121B;
+		if (RSN_31.equals(gRoute.getRouteShortName())) return COLOR_576423;
+		if (RSN_32.equals(gRoute.getRouteShortName())) return COLOR_FFD200;
+		if (RSN_33.equals(gRoute.getRouteShortName())) return COLOR_E9979B;
+		if (RSN_35.equals(gRoute.getRouteShortName())) return COLOR_F15D5E;
+		if (RSN_40.equals(gRoute.getRouteShortName())) return COLOR_E977AF;
+		if (RSN_41.equals(gRoute.getRouteShortName())) return COLOR_8D64AA;
+		if (RSN_42.equals(gRoute.getRouteShortName())) return COLOR_B32317;
+		if (RSN_43.equals(gRoute.getRouteShortName())) return COLOR_C2A204;
+		if (RSN_44.equals(gRoute.getRouteShortName())) return COLOR_B26062;
+		if (RSN_46.equals(gRoute.getRouteShortName())) return COLOR_A6228E;
+		if (RSN_47.equals(gRoute.getRouteShortName())) return COLOR_B2BB1E;
+		if (RSN_51.equals(gRoute.getRouteShortName())) return COLOR_E9979B;
+		if (RSN_61.equals(gRoute.getRouteShortName())) return COLOR_F58220;
+		if (RSN_91.equals(gRoute.getRouteShortName())) return COLOR_007D68;
 		return super.getRouteColor(gRoute);
 	}
 
@@ -178,15 +178,15 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
-		String stationName = cleanTripHeadsign(gTrip.trip_headsign);
+		String stationName = cleanTripHeadsign(gTrip.getTripHeadsign());
 		if (mTrip.getRouteId() == 51l) {
-			if (gTrip.direction_id == 0) {
+			if (gTrip.getDirectionId() == 0) {
 				stationName = VAUDREUIL;
-			} else if (gTrip.direction_id == 1) {
+			} else if (gTrip.getDirectionId() == 1) {
 				stationName = ST_LAZARE;
 			}
 		}
-		mTrip.setHeadsignString(stationName, gTrip.direction_id);
+		mTrip.setHeadsignString(stationName, gTrip.getDirectionId());
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
@@ -233,7 +233,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String getStopCode(GStop gStop) {
-		if (ZERO.equals(gStop.stop_code)) {
+		if (ZERO.equals(gStop.getStopCode())) {
 			return null;
 		}
 		return super.getStopCode(gStop);
@@ -248,54 +248,54 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			return Integer.valueOf(stopCode); // using stop code as stop ID
 		}
 		// generating integer stop ID
-		Matcher matcher = DIGITS.matcher(gStop.stop_id);
+		Matcher matcher = DIGITS.matcher(gStop.getStopId());
 		matcher.find();
 		int digits = Integer.parseInt(matcher.group());
 		int stopId;
-		if (gStop.stop_id.startsWith("DDO")) {
+		if (gStop.getStopId().startsWith("DDO")) {
 			stopId = 100000;
-		} else if (gStop.stop_id.startsWith("HUD")) {
+		} else if (gStop.getStopId().startsWith("HUD")) {
 			stopId = 200000;
-		} else if (gStop.stop_id.startsWith("LIP")) {
+		} else if (gStop.getStopId().startsWith("LIP")) {
 			stopId = 300000;
-		} else if (gStop.stop_id.startsWith("NIP")) {
+		} else if (gStop.getStopId().startsWith("NIP")) {
 			stopId = 400000;
-		} else if (gStop.stop_id.startsWith("PCL")) {
+		} else if (gStop.getStopId().startsWith("PCL")) {
 			stopId = 500000;
-		} else if (gStop.stop_id.startsWith("PIN")) {
+		} else if (gStop.getStopId().startsWith("PIN")) {
 			stopId = 600000;
-		} else if (gStop.stop_id.startsWith("RIG")) {
+		} else if (gStop.getStopId().startsWith("RIG")) {
 			stopId = 700000;
-		} else if (gStop.stop_id.startsWith("SAB")) {
+		} else if (gStop.getStopId().startsWith("SAB")) {
 			stopId = 800000;
-		} else if (gStop.stop_id.startsWith("SGV")) {
+		} else if (gStop.getStopId().startsWith("SGV")) {
 			stopId = 900000;
-		} else if (gStop.stop_id.startsWith("SLR")) {
+		} else if (gStop.getStopId().startsWith("SLR")) {
 			stopId = 1000000;
-		} else if (gStop.stop_id.startsWith("SLZ")) {
+		} else if (gStop.getStopId().startsWith("SLZ")) {
 			stopId = 1100000;
-		} else if (gStop.stop_id.startsWith("VAU")) {
+		} else if (gStop.getStopId().startsWith("VAU")) {
 			stopId = 1200000;
 		} else {
 			System.out.println("Stop doesn't have an ID (start with)! " + gStop);
 			System.exit(-1);
 			stopId = -1;
 		}
-		if (gStop.stop_id.endsWith("A")) {
+		if (gStop.getStopId().endsWith("A")) {
 			stopId += 1000;
-		} else if (gStop.stop_id.endsWith("B")) {
+		} else if (gStop.getStopId().endsWith("B")) {
 			stopId += 2000;
-		} else if (gStop.stop_id.endsWith("C")) {
+		} else if (gStop.getStopId().endsWith("C")) {
 			stopId += 3000;
-		} else if (gStop.stop_id.endsWith("D")) {
+		} else if (gStop.getStopId().endsWith("D")) {
 			stopId += 4000;
-		} else if (gStop.stop_id.endsWith("E")) {
+		} else if (gStop.getStopId().endsWith("E")) {
 			stopId += 5000;
-		} else if (gStop.stop_id.endsWith("F")) {
+		} else if (gStop.getStopId().endsWith("F")) {
 			stopId += 6000;
-		} else if (gStop.stop_id.endsWith("G")) {
+		} else if (gStop.getStopId().endsWith("G")) {
 			stopId += 7000;
-		} else if (gStop.stop_id.endsWith("H")) {
+		} else if (gStop.getStopId().endsWith("H")) {
 			stopId += 8000;
 		} else {
 			System.out.println("Stop doesn't have an ID (end with)! " + gStop);
