@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.Utils;
 import org.mtransit.parser.gtfs.data.GCalendar;
@@ -80,6 +81,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	private static final String _40_RSN = "A40";
+	private static final String RSN_40 = "40";
 
 	@Override
 	public String getRouteShortName(GRoute gRoute) {
@@ -125,57 +127,43 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final String COLOR_F58220 = "F58220";
 	private static final String COLOR_007D68 = "007D68";
 
-	private static final String RSN_1 = "1";
-	private static final String RSN_2 = "2";
-	private static final String RSN_3 = "3";
-	private static final String RSN_4 = "4";
-	private static final String RSN_5 = "5";
-	private static final String RSN_6 = "6";
-	private static final String RSN_7 = "7";
-	private static final String RSN_8 = "8";
-	private static final String RSN_15 = "15";
-	private static final String RSN_21 = "21";
-	private static final String RSN_31 = "31";
-	private static final String RSN_32 = "32";
-	private static final String RSN_33 = "33";
-	private static final String RSN_35 = "35";
-	private static final String RSN_40 = "40";
-	private static final String RSN_41 = "41";
-	private static final String RSN_42 = "42";
-	private static final String RSN_43 = "43";
-	private static final String RSN_44 = "44";
-	private static final String RSN_46 = "46";
-	private static final String RSN_47 = "47";
-	private static final String RSN_51 = "51";
-	private static final String RSN_61 = "61";
-	private static final String RSN_91 = "91";
-
 	@Override
 	public String getRouteColor(GRoute gRoute) {
-		if (RSN_1.equals(gRoute.getRouteShortName())) return COLOR_00336C;
-		if (RSN_2.equals(gRoute.getRouteShortName())) return COLOR_6DC8BF;
-		if (RSN_3.equals(gRoute.getRouteShortName())) return COLOR_1E398D;
-		if (RSN_4.equals(gRoute.getRouteShortName())) return COLOR_F15A29;
-		if (RSN_5.equals(gRoute.getRouteShortName())) return COLOR_EC008C;
-		if (RSN_6.equals(gRoute.getRouteShortName())) return COLOR_8DC63F;
-		if (RSN_7.equals(gRoute.getRouteShortName())) return COLOR_00ADDC;
-		if (RSN_8.equals(gRoute.getRouteShortName())) return COLOR_878A72;
-		if (RSN_15.equals(gRoute.getRouteShortName())) return COLOR_3B6E8F;
-		if (RSN_21.equals(gRoute.getRouteShortName())) return COLOR_B5121B;
-		if (RSN_31.equals(gRoute.getRouteShortName())) return COLOR_576423;
-		if (RSN_32.equals(gRoute.getRouteShortName())) return COLOR_FFD200;
-		if (RSN_33.equals(gRoute.getRouteShortName())) return COLOR_E9979B;
-		if (RSN_35.equals(gRoute.getRouteShortName())) return COLOR_F15D5E;
-		if (RSN_40.equals(gRoute.getRouteShortName())) return COLOR_E977AF;
-		if (RSN_41.equals(gRoute.getRouteShortName())) return COLOR_8D64AA;
-		if (RSN_42.equals(gRoute.getRouteShortName())) return COLOR_B32317;
-		if (RSN_43.equals(gRoute.getRouteShortName())) return COLOR_C2A204;
-		if (RSN_44.equals(gRoute.getRouteShortName())) return COLOR_B26062;
-		if (RSN_46.equals(gRoute.getRouteShortName())) return COLOR_A6228E;
-		if (RSN_47.equals(gRoute.getRouteShortName())) return COLOR_B2BB1E;
-		if (RSN_51.equals(gRoute.getRouteShortName())) return COLOR_E9979B;
-		if (RSN_61.equals(gRoute.getRouteShortName())) return COLOR_F58220;
-		if (RSN_91.equals(gRoute.getRouteShortName())) return COLOR_007D68;
+		if (StringUtils.isEmpty(gRoute.getRouteColor())) {
+			int rsn = Integer.parseInt(gRoute.getRouteShortName());
+			switch (rsn) {
+			// @formatter:off
+			case 1: return COLOR_00336C;
+			case 2: return COLOR_6DC8BF;
+			case 3: return COLOR_1E398D;
+			case 4: return COLOR_F15A29;
+			case 5: return COLOR_EC008C;
+			case 6: return COLOR_8DC63F;
+			case 7: return COLOR_00ADDC;
+			case 8: return COLOR_878A72;
+			case 9: return COLOR_FFD200;
+			case 15: return COLOR_3B6E8F;
+			case 21: return COLOR_B5121B;
+			case 31: return COLOR_576423;
+			case 32: return COLOR_FFD200;
+			case 33: return COLOR_E9979B;
+			case 35: return COLOR_F15D5E;
+			case 40: return COLOR_E977AF;
+			case 41: return COLOR_8D64AA;
+			case 42: return COLOR_B32317;
+			case 43: return COLOR_C2A204;
+			case 44: return COLOR_B26062;
+			case 46: return COLOR_A6228E;
+			case 47: return COLOR_B2BB1E;
+			case 51: return COLOR_E9979B;
+			case 61: return COLOR_F58220;
+			case 91: return COLOR_007D68;
+			// @formatter:on
+			}
+			System.out.printf("\nUnexpected route color %s!\n", gRoute);
+			System.exit(-1);
+			return null;
+		}
 		return super.getRouteColor(gRoute);
 	}
 
@@ -184,15 +172,16 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
-		String stationName = cleanTripHeadsign(gTrip.getTripHeadsign());
 		if (mTrip.getRouteId() == 51l) {
 			if (gTrip.getDirectionId() == 0) {
-				stationName = VAUDREUIL;
+				mTrip.setHeadsignString(VAUDREUIL, gTrip.getDirectionId());
+				return;
 			} else if (gTrip.getDirectionId() == 1) {
-				stationName = ST_LAZARE;
+				mTrip.setHeadsignString(ST_LAZARE, gTrip.getDirectionId());
+				return;
 			}
 		}
-		mTrip.setHeadsignString(stationName, gTrip.getDirectionId());
+		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
