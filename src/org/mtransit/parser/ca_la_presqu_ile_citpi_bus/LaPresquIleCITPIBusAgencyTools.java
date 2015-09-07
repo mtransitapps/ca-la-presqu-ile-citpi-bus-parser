@@ -1,11 +1,19 @@
 package org.mtransit.parser.ca_la_presqu_ile_citpi_bus;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
+import org.mtransit.parser.Pair;
+import org.mtransit.parser.SplitUtils;
+import org.mtransit.parser.SplitUtils.RouteTripSpec;
 import org.mtransit.parser.Utils;
 import org.mtransit.parser.gtfs.data.GCalendar;
 import org.mtransit.parser.gtfs.data.GCalendarDate;
@@ -13,10 +21,11 @@ import org.mtransit.parser.gtfs.data.GRoute;
 import org.mtransit.parser.gtfs.data.GSpec;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.gtfs.data.GTrip;
+import org.mtransit.parser.gtfs.data.GTripStop;
 import org.mtransit.parser.mt.data.MAgency;
 import org.mtransit.parser.mt.data.MRoute;
-import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.mt.data.MTrip;
+import org.mtransit.parser.mt.data.MTripStop;
 
 // https://www.amt.qc.ca/en/about/open-data
 // http://www.amt.qc.ca/xdata/citpi/google_transit.zip
@@ -167,14 +176,67 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteColor(gRoute);
 	}
 
+	@Override
+	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
+		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
+			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+		}
+		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+	}
+
+	@Override
+	public ArrayList<MTrip> splitTrip(MRoute mRoute, GTrip gTrip, GSpec gtfs) {
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
+			return ALL_ROUTE_TRIPS2.get(mRoute.id).getAllTrips();
+		}
+		return super.splitTrip(mRoute, gTrip, gtfs);
+	}
+
 	private static final String ST_LAZARE = "St-Lazare";
-	private static final String VAUDREUIL = "Vaudreuil";
+	private static final String GARE_VAUDREUIL = "Gare Vaudreuil";
+	private static final String GARE_DORION = "Gare Dorion";
+	private static final String MARIER = "Marier";
+	private static final String FLORALIES = "Floralies";
+
+	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
+	static {
+		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
+		map2.put(4l, new RouteTripSpec(4l, //
+				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
+				1, MTrip.HEADSIGN_TYPE_STRING, FLORALIES) //
+				.addTripSort(0, //
+						Arrays.asList(new String[] { "VAU189D", "VAU189A", "VAU61C" })) //
+				.addTripSort(1, //
+						Arrays.asList(new String[] { "VAU61A", "VAU91D", "VAU91D", "VAU262C", //
+								"VAU58A", "VAU58D", "VAU258D", "VAU189D" })) //
+				.compileBothTripSort());
+		map2.put(9l, new RouteTripSpec(9l, //
+				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
+				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
+				.addTripSort(0, //
+						Arrays.asList(new String[] { "VAU332A", //
+								"VAU609D", "VAU609A", "VAU608B", "VAU61C" })) //
+				.addTripSort(1, //
+						Arrays.asList(new String[] { "VAU61C", "VAU596D", "VAU608D", "VAU609D", "VAU332C", //
+								"VAU332A" })) //
+				.compileBothTripSort());
+		ALL_ROUTE_TRIPS2 = map2;
+	}
+
 
 	@Override
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
-		if (mTrip.getRouteId() == 51l) {
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
+			return; // split
+		}
+		if (mRoute.getId() == 5l) {
 			if (gTrip.getDirectionId() == 0) {
-				mTrip.setHeadsignString(VAUDREUIL, gTrip.getDirectionId());
+				mTrip.setHeadsignString(GARE_DORION, gTrip.getDirectionId());
+				return;
+			}
+		} else if (mRoute.getId() == 51l) {
+			if (gTrip.getDirectionId() == 0) {
+				mTrip.setHeadsignString(GARE_VAUDREUIL, gTrip.getDirectionId());
 				return;
 			} else if (gTrip.getDirectionId() == 1) {
 				mTrip.setHeadsignString(ST_LAZARE, gTrip.getDirectionId());
@@ -182,6 +244,14 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			}
 		}
 		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
+	}
+
+	@Override
+	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.id));
+		}
+		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
@@ -193,11 +263,16 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern SERVICE = Pattern.compile("(service) ([a|p]m)", Pattern.CASE_INSENSITIVE);
 	private static final String SERVICE_REPLACEMENT = "$2";
 
+	private static final Pattern POINT = Pattern.compile("(point)", Pattern.CASE_INSENSITIVE);
+	private static final String POINT_REPLACEMENT = "Pt";
+
 	@Override
 	public String cleanTripHeadsign(String tripHeadsign) {
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
 		tripHeadsign = SECTEUR.matcher(tripHeadsign).replaceAll(SECTEUR_REPLACEMENT);
 		tripHeadsign = SERVICE.matcher(tripHeadsign).replaceAll(SERVICE_REPLACEMENT);
+		tripHeadsign = POINT.matcher(tripHeadsign).replaceAll(POINT_REPLACEMENT);
+		tripHeadsign = CleanUtils.cleanStreetTypesFRCA(tripHeadsign);
 		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
 
@@ -236,15 +311,38 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	private static final Pattern DIGITS = Pattern.compile("[\\d]+");
 
+	private static final String _MERGED = "_merged_";
+
+	private static final String DDO = "DDO";
+	private static final String HUD = "HUD";
+	private static final String LIP = "LIP";
+	private static final String NIP = "NIP";
+	private static final String PCL = "PCL";
+	private static final String PIN = "PIN";
+	private static final String RIG = "RIG";
+	private static final String SAB = "SAB";
+	private static final String SGV = "SGV";
+	private static final String SLR = "SLR";
+	private static final String SLZ = "SLZ";
+	private static final String VAU = "VAU";
+
+	private static final String A = "A";
+	private static final String B = "B";
+	private static final String C = "C";
+	private static final String D = "D";
+	private static final String E = "E";
+	private static final String F = "F";
+	private static final String G = "G";
+	private static final String H = "H";
+
 	@Override
 	public int getStopId(GStop gStop) {
 		String stopCode = getStopCode(gStop);
 		if (stopCode != null && stopCode.length() > 0) {
 			return Integer.valueOf(stopCode); // using stop code as stop ID
 		}
-		// generating integer stop ID
 		String stopIds = gStop.getStopId();
-		int index = stopIds.indexOf("_merged_");
+		int index = stopIds.indexOf(_MERGED);
 		if (index >= 0) {
 			stopIds = stopIds.substring(0, index);
 		}
@@ -252,50 +350,50 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		matcher.find();
 		int digits = Integer.parseInt(matcher.group());
 		int stopId;
-		if (stopIds.startsWith("DDO")) {
+		if (stopIds.startsWith(DDO)) {
 			stopId = 100000;
-		} else if (stopIds.startsWith("HUD")) {
+		} else if (stopIds.startsWith(HUD)) {
 			stopId = 200000;
-		} else if (stopIds.startsWith("LIP")) {
+		} else if (stopIds.startsWith(LIP)) {
 			stopId = 300000;
-		} else if (stopIds.startsWith("NIP")) {
+		} else if (stopIds.startsWith(NIP)) {
 			stopId = 400000;
-		} else if (stopIds.startsWith("PCL")) {
+		} else if (stopIds.startsWith(PCL)) {
 			stopId = 500000;
-		} else if (stopIds.startsWith("PIN")) {
+		} else if (stopIds.startsWith(PIN)) {
 			stopId = 600000;
-		} else if (stopIds.startsWith("RIG")) {
+		} else if (stopIds.startsWith(RIG)) {
 			stopId = 700000;
-		} else if (stopIds.startsWith("SAB")) {
+		} else if (stopIds.startsWith(SAB)) {
 			stopId = 800000;
-		} else if (stopIds.startsWith("SGV")) {
+		} else if (stopIds.startsWith(SGV)) {
 			stopId = 900000;
-		} else if (stopIds.startsWith("SLR")) {
+		} else if (stopIds.startsWith(SLR)) {
 			stopId = 1000000;
-		} else if (stopIds.startsWith("SLZ")) {
+		} else if (stopIds.startsWith(SLZ)) {
 			stopId = 1100000;
-		} else if (stopIds.startsWith("VAU")) {
+		} else if (stopIds.startsWith(VAU)) {
 			stopId = 1200000;
 		} else {
 			System.out.printf("\nStop doesn't have an ID (start with)! %s!\n", gStop);
 			System.exit(-1);
 			stopId = -1;
 		}
-		if (stopIds.endsWith("A")) {
+		if (stopIds.endsWith(A)) {
 			stopId += 1000;
-		} else if (stopIds.endsWith("B")) {
+		} else if (stopIds.endsWith(B)) {
 			stopId += 2000;
-		} else if (stopIds.endsWith("C")) {
+		} else if (stopIds.endsWith(C)) {
 			stopId += 3000;
-		} else if (stopIds.endsWith("D")) {
+		} else if (stopIds.endsWith(D)) {
 			stopId += 4000;
-		} else if (stopIds.endsWith("E")) {
+		} else if (stopIds.endsWith(E)) {
 			stopId += 5000;
-		} else if (stopIds.endsWith("F")) {
+		} else if (stopIds.endsWith(F)) {
 			stopId += 6000;
-		} else if (stopIds.endsWith("G")) {
+		} else if (stopIds.endsWith(G)) {
 			stopId += 7000;
-		} else if (stopIds.endsWith("H")) {
+		} else if (stopIds.endsWith(H)) {
 			stopId += 8000;
 		} else {
 			System.out.printf("\nStop doesn't have an ID (end with)! %s!\n", gStop);
@@ -303,5 +401,4 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		}
 		return stopId + digits;
 	}
-
 }
