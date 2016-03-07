@@ -192,11 +192,14 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.splitTrip(mRoute, gTrip, gtfs);
 	}
 
-	private static final String ST_LAZARE = "St-Lazare";
-	private static final String GARE_VAUDREUIL = "Gare Vaudreuil";
+	private static final String SAINT_LAZARE = "St-Lazare";
+	private static final String VAUDREUIL = "Vaudreuil";
+	private static final String GARE_VAUDREUIL = "Gare " + VAUDREUIL;
 	private static final String GARE_DORION = "Gare Dorion";
 	private static final String MARIER = "Marier";
 	private static final String FLORALIES = "Floralies";
+	private static final String POINTE_CLAIRE = "Pte-Claire";
+	private static final String SAINTE_ANNE_DE_BELLEVUE = "Ste-Anne-de-Bellevue";
 
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
@@ -242,21 +245,43 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (mRoute.getId() == 5l) {
-			if (gTrip.getDirectionId() == 0) {
-				mTrip.setHeadsignString(GARE_DORION, gTrip.getDirectionId());
-				return;
+		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
+	}
+
+	@Override
+	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
+		if (mTrip.getRouteId() == 5l) {
+			if (mTrip.getHeadsignId() == 0) {
+				mTrip.setHeadsignString(GARE_DORION, mTrip.getHeadsignId());
+				return true;
 			}
-		} else if (mRoute.getId() == 51l) {
-			if (gTrip.getDirectionId() == 0) {
-				mTrip.setHeadsignString(GARE_VAUDREUIL, gTrip.getDirectionId());
-				return;
-			} else if (gTrip.getDirectionId() == 1) {
-				mTrip.setHeadsignString(ST_LAZARE, gTrip.getDirectionId());
-				return;
+		} else if (mTrip.getRouteId() == 7l) {
+			if (mTrip.getHeadsignId() == 0) {
+				mTrip.setHeadsignString(POINTE_CLAIRE, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 21l) {
+			if (mTrip.getHeadsignId() == 0) {
+				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 35l) {
+			if (mTrip.getHeadsignId() == 0) {
+				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 51l) {
+			if (mTrip.getHeadsignId() == 0) {
+				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
+				return true;
+			} else if (mTrip.getHeadsignId() == 1) {
+				mTrip.setHeadsignString(SAINT_LAZARE, mTrip.getHeadsignId());
+				return true;
 			}
 		}
-		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
+		System.out.printf("\nUnexpected trips to merge %s & %s!\n", mTrip, mTripToMerge);
+		System.exit(-1);
+		return false;
 	}
 
 	@Override
