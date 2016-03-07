@@ -205,20 +205,33 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
 				1, MTrip.HEADSIGN_TYPE_STRING, FLORALIES) //
 				.addTripSort(0, //
-						Arrays.asList(new String[] { "VAU189D", "VAU189A", "VAU61C" })) //
+						Arrays.asList(new String[] { //
+						"VAU189D", "VAU58B", //
+								"VAU259C", "VAU262A", //
+								"VAU91B", "VAU61A" //
+						})) //
 				.addTripSort(1, //
-						Arrays.asList(new String[] { "VAU61A", "VAU91D", "VAU91D", "VAU262C", //
-								"VAU58A", "VAU58D", "VAU258D", "VAU189D" })) //
+						Arrays.asList(new String[] { //
+						"VAU61A", "VAU91D", //
+								"VAU262C", "VAU58A", //
+								"VAU58D", //
+								"VAU258D", "VAU189D" //
+						})) //
 				.compileBothTripSort());
 		map2.put(9l, new RouteTripSpec(9l, //
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
 				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
 				.addTripSort(0, //
-						Arrays.asList(new String[] { "VAU332A", //
-								"VAU609D", "VAU609A", "VAU608B", "VAU61C" })) //
+						Arrays.asList(new String[] { //
+						"VAU332A", //
+								/* + */"VAU609D"/* + */, //
+								"VAU609A", "VAU608B", "VAU61A"
+						})) //
 				.addTripSort(1, //
-						Arrays.asList(new String[] { "VAU61C", "VAU596D", "VAU608D", "VAU609D", "VAU332C", //
-								"VAU332A" })) //
+						Arrays.asList(new String[] { //
+						"VAU61A", "VAU596D", "VAU608D", "VAU609D", "VAU332C", //
+								"VAU332A" //
+						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
 	}
