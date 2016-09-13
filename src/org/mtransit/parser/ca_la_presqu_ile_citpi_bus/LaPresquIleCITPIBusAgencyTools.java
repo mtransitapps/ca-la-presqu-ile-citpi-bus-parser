@@ -227,12 +227,22 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
 						"VAU332A", //
-								/* + */"VAU609D"/* + */, //
-								"VAU609A", "VAU608B", "VAU61A"
+								"VAU609A", //
+								"VAU608B", //
+								"VAU607B", //
+								"VAU608D", // ==
+								"VAU603B", //
+								"VAU595B", //
+								"VAU61A" //
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
-						"VAU61A", "VAU596D", "VAU608D", "VAU609D", "VAU332C", //
+						"VAU61A", //
+								"VAU596D", //
+								"VAU607D", //
+								"VAU608D", // ==
+								"VAU609D", //
+								"VAU332C", // !=
 								"VAU332A" //
 						})) //
 				.compileBothTripSort());
@@ -276,6 +286,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				return true;
 			} else if (mTrip.getHeadsignId() == 1) {
 				mTrip.setHeadsignString(SAINT_LAZARE, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 335l) {
+			if (mTrip.getHeadsignId() == 0) {
+				mTrip.setHeadsignString("Ste-Anne-De-Bellevue", mTrip.getHeadsignId());
 				return true;
 			}
 		}
