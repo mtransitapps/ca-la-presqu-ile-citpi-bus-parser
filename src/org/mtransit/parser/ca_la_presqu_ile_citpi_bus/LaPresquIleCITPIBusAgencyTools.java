@@ -292,6 +292,9 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			if (mTrip.getHeadsignId() == 0) {
 				mTrip.setHeadsignString("Ste-Anne-De-Bellevue", mTrip.getHeadsignId());
 				return true;
+			} else if (mTrip.getHeadsignId() == 1) {
+				mTrip.setHeadsignString(GARE_DORION, mTrip.getHeadsignId());
+				return true;
 			}
 		}
 		System.out.printf("\nUnexpected trips to merge %s & %s!\n", mTrip, mTripToMerge);
