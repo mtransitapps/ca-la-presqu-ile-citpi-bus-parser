@@ -135,6 +135,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final String COLOR_E9979B = "E9979B";
 	private static final String COLOR_F58220 = "F58220";
 	private static final String COLOR_007D68 = "007D68";
+	private static final String COLOR_FDD504 = "FDD504";
 
 	@Override
 	public String getRouteColor(GRoute gRoute) {
@@ -167,6 +168,8 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			case 51: return COLOR_E9979B;
 			case 61: return COLOR_F58220;
 			case 91: return COLOR_007D68;
+			case 115: return COLOR_3B6E8F;
+			case 335: return COLOR_FDD504;
 			// @formatter:on
 			}
 			System.out.printf("\nUnexpected route color %s!\n", gRoute);
