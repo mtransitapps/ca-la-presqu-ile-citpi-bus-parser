@@ -28,7 +28,7 @@ import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
 // https://www.amt.qc.ca/en/about/open-data
-// http://www.amt.qc.ca/xdata/citpi/google_transit.zip
+// https://www.amt.qc.ca/xdata/citpi/google_transit.zip
 public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(String[] args) {
@@ -229,24 +229,24 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
-						"VAU332A", //
+						"VAU332B", // 2e avenue / avenue Curé-David
 								"VAU609A", //
 								"VAU608B", //
 								"VAU607B", //
 								"VAU608D", // ==
 								"VAU603B", //
 								"VAU595B", //
-								"VAU61A" //
+								"VAU61A", // Gare Vaudreuil
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
-						"VAU61A", //
+						"VAU61A", // Gare Vaudreuil
 								"VAU596D", //
 								"VAU607D", //
 								"VAU608D", // ==
 								"VAU609D", //
 								"VAU332C", // !=
-								"VAU332A" //
+								"VAU332B" // 2e avenue / avenue Curé-David
 						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
