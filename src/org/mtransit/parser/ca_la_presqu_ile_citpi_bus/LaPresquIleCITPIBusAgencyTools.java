@@ -27,8 +27,8 @@ import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
-// https://www.amt.qc.ca/en/about/open-data
-// https://www.amt.qc.ca/xdata/citpi/google_transit.zip
+// https://rtm.quebec/en/about/open-data
+// https://rtm.quebec/xdata/citpi/google_transit.zip
 public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(String[] args) {
