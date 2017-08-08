@@ -100,8 +100,34 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteShortName(gRoute);
 	}
 
+	private static final String A = "A";
+	private static final String B = "B";
+	private static final String C = "C";
+	private static final String D = "D";
+	private static final String E = "E";
+	private static final String F = "F";
+	private static final String G = "G";
+	private static final String H = "H";
+
+	private static final long RID_ENDS_WITH_A = 1000L;
+	private static final long RID_ENDS_WITH_B = 2000L;
+
 	@Override
 	public long getRouteId(GRoute gRoute) {
+		if (!Utils.isDigitsOnly(gRoute.getRouteShortName())) {
+			Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
+			if (matcher.find()) {
+				int digits = Integer.parseInt(matcher.group());
+				if (gRoute.getRouteShortName().endsWith(A)) {
+					return RID_ENDS_WITH_A + digits;
+				} else if (gRoute.getRouteShortName().endsWith(B)) {
+					return RID_ENDS_WITH_B + digits;
+				}
+			}
+			System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
+			System.exit(-1);
+			return -1L;
+		}
 		return Long.parseLong(gRoute.getRouteShortName());
 	}
 
@@ -140,37 +166,44 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public String getRouteColor(GRoute gRoute) {
 		if (StringUtils.isEmpty(gRoute.getRouteColor())) {
-			int rsn = Integer.parseInt(gRoute.getRouteShortName());
-			switch (rsn) {
-			// @formatter:off
-			case 1: return COLOR_00336C;
-			case 2: return COLOR_6DC8BF;
-			case 3: return COLOR_1E398D;
-			case 4: return COLOR_F15A29;
-			case 5: return COLOR_EC008C;
-			case 6: return COLOR_8DC63F;
-			case 7: return COLOR_00ADDC;
-			case 8: return COLOR_878A72;
-			case 9: return COLOR_FFD200;
-			case 15: return COLOR_3B6E8F;
-			case 21: return COLOR_B5121B;
-			case 31: return COLOR_576423;
-			case 32: return COLOR_FFD200;
-			case 33: return COLOR_E9979B;
-			case 35: return COLOR_F15D5E;
-			case 40: return COLOR_E977AF;
-			case 41: return COLOR_8D64AA;
-			case 42: return COLOR_B32317;
-			case 43: return COLOR_C2A204;
-			case 44: return COLOR_B26062;
-			case 46: return COLOR_A6228E;
-			case 47: return COLOR_B2BB1E;
-			case 51: return COLOR_E9979B;
-			case 61: return COLOR_F58220;
-			case 91: return COLOR_007D68;
-			case 115: return COLOR_3B6E8F;
-			case 335: return COLOR_FDD504;
-			// @formatter:on
+			if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
+				int rsn = Integer.parseInt(gRoute.getRouteShortName());
+				switch (rsn) {
+				// @formatter:off
+				case 1: return COLOR_00336C;
+				case 2: return COLOR_6DC8BF;
+				case 3: return COLOR_1E398D;
+				case 4: return COLOR_F15A29;
+				case 5: return COLOR_EC008C;
+				case 6: return COLOR_8DC63F;
+				case 7: return COLOR_00ADDC;
+				case 8: return COLOR_878A72;
+				case 9: return COLOR_FFD200;
+				case 15: return COLOR_3B6E8F;
+				case 21: return COLOR_B5121B;
+				case 31: return COLOR_576423;
+				case 32: return COLOR_FFD200;
+				case 33: return COLOR_E9979B;
+				case 35: return COLOR_F15D5E;
+				case 40: return COLOR_E977AF;
+				case 41: return COLOR_8D64AA;
+				case 42: return COLOR_B32317;
+				case 43: return COLOR_C2A204;
+				case 44: return COLOR_B26062;
+				case 46: return COLOR_A6228E;
+				case 47: return COLOR_B2BB1E;
+				case 51: return COLOR_E9979B;
+				case 61: return COLOR_F58220;
+				case 91: return COLOR_007D68;
+				case 115: return COLOR_3B6E8F;
+				case 335: return COLOR_FDD504;
+				// @formatter:on
+				}
+			}
+			if ("5A".equalsIgnoreCase(gRoute.getRouteShortName())) {
+				return COLOR_EC008C;
+			} else if ("5B".equalsIgnoreCase(gRoute.getRouteShortName())) {
+				return COLOR_EC008C;
 			}
 			System.out.printf("\nUnexpected route color %s!\n", gRoute);
 			System.exit(-1);
@@ -179,30 +212,13 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteColor(gRoute);
 	}
 
-	@Override
-	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
-		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
-			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
-		}
-		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
-	}
-
-	@Override
-	public ArrayList<MTrip> splitTrip(MRoute mRoute, GTrip gTrip, GSpec gtfs) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return ALL_ROUTE_TRIPS2.get(mRoute.getId()).getAllTrips();
-		}
-		return super.splitTrip(mRoute, gTrip, gtfs);
-	}
-
-	private static final String SAINT_LAZARE = "St-Lazare";
 	private static final String VAUDREUIL = "Vaudreuil";
 	private static final String GARE_VAUDREUIL = "Gare " + VAUDREUIL;
 	private static final String GARE_DORION = "Gare Dorion";
 	private static final String MARIER = "Marier";
 	private static final String FLORALIES = "Floralies";
 	private static final String POINTE_CLAIRE = "Pte-Claire";
-	private static final String SAINTE_ANNE_DE_BELLEVUE = "Ste-Anne-de-Bellevue";
+	private static final String SAINTE_ANNE_DE_BELLEVUE = "Ste-Anne-De-Bellevue";
 
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
@@ -222,6 +238,23 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 								"VAU262C", "VAU58A", //
 								"VAU58D", //
 								"VAU258D", "VAU189D" //
+						})) //
+				.compileBothTripSort());
+		map2.put(5L + RID_ENDS_WITH_A, new RouteTripSpec(5L + RID_ENDS_WITH_A, //
+				0, MTrip.HEADSIGN_TYPE_STRING, GARE_DORION, //
+				1, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL) //
+				.addTripSort(0, //
+						Arrays.asList(new String[] { //
+						"VAU61A", // Gare Vaudreuil
+								"VAU63A", // rue Boileau / rue Forbes
+								"VAU269C", // rue du Bicentenaire / rue Lefebvre
+								"VAU8A", // Gare Dorion
+						})) //
+				.addTripSort(1, //
+						Arrays.asList(new String[] { //
+						"VAU8A", // Gare Dorion
+								"VAU56A", //
+								"VAU61A", // Gare Vaudreuil
 						})) //
 				.compileBothTripSort());
 		map2.put(9l, new RouteTripSpec(9l, //
@@ -252,6 +285,29 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		ALL_ROUTE_TRIPS2 = map2;
 	}
 
+	@Override
+	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
+		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
+			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+		}
+		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+	}
+
+	@Override
+	public ArrayList<MTrip> splitTrip(MRoute mRoute, GTrip gTrip, GSpec gtfs) {
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
+			return ALL_ROUTE_TRIPS2.get(mRoute.getId()).getAllTrips();
+		}
+		return super.splitTrip(mRoute, gTrip, gtfs);
+	}
+
+	@Override
+	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()));
+		}
+		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
+	}
 
 	@Override
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
@@ -263,39 +319,42 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
-		if (mTrip.getRouteId() == 5l) {
-			if (mTrip.getHeadsignId() == 0) {
-				mTrip.setHeadsignString(GARE_DORION, mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 7l) {
-			if (mTrip.getHeadsignId() == 0) {
+		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
+		if (mTrip.getRouteId() == 7L) {
+			if (Arrays.asList( //
+					SAINTE_ANNE_DE_BELLEVUE, //
+					POINTE_CLAIRE //
+					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(POINTE_CLAIRE, mTrip.getHeadsignId());
 				return true;
 			}
-		} else if (mTrip.getRouteId() == 21l) {
-			if (mTrip.getHeadsignId() == 0) {
+		} else if (mTrip.getRouteId() == 21L) {
+			if (Arrays.asList( //
+					"Hudson", //
+					VAUDREUIL //
+					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
 				return true;
 			}
-		} else if (mTrip.getRouteId() == 35l) {
-			if (mTrip.getHeadsignId() == 0) {
+		} else if (mTrip.getRouteId() == 35L) {
+			if (Arrays.asList( //
+					"Île-Perrot", //
+					SAINTE_ANNE_DE_BELLEVUE //
+					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
 				return true;
 			}
-		} else if (mTrip.getRouteId() == 51l) {
-			if (mTrip.getHeadsignId() == 0) {
-				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
+		} else if (mTrip.getRouteId() == 335L) {
+			if (Arrays.asList( //
+					"Île-Perrot", //
+					SAINTE_ANNE_DE_BELLEVUE //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
 				return true;
-			} else if (mTrip.getHeadsignId() == 1) {
-				mTrip.setHeadsignString(SAINT_LAZARE, mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 335l) {
-			if (mTrip.getHeadsignId() == 0) {
-				mTrip.setHeadsignString("Ste-Anne-De-Bellevue", mTrip.getHeadsignId());
-				return true;
-			} else if (mTrip.getHeadsignId() == 1) {
+			} else if (Arrays.asList( //
+					"Gare Pincourt T-V", //
+					GARE_DORION //
+					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(GARE_DORION, mTrip.getHeadsignId());
 				return true;
 			}
@@ -303,14 +362,6 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		System.out.printf("\nUnexpected trips to merge %s & %s!\n", mTrip, mTripToMerge);
 		System.exit(-1);
 		return false;
-	}
-
-	@Override
-	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()));
-		}
-		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
@@ -385,15 +436,6 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final String SLZ = "SLZ";
 	private static final String VAU = "VAU";
 
-	private static final String A = "A";
-	private static final String B = "B";
-	private static final String C = "C";
-	private static final String D = "D";
-	private static final String E = "E";
-	private static final String F = "F";
-	private static final String G = "G";
-	private static final String H = "H";
-
 	@Override
 	public int getStopId(GStop gStop) {
 		String stopCode = getStopCode(gStop);
@@ -406,58 +448,62 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			stopIds = stopIds.substring(0, index);
 		}
 		Matcher matcher = DIGITS.matcher(stopIds);
-		matcher.find();
-		int digits = Integer.parseInt(matcher.group());
-		int stopId;
-		if (stopIds.startsWith(DDO)) {
-			stopId = 100000;
-		} else if (stopIds.startsWith(HUD)) {
-			stopId = 200000;
-		} else if (stopIds.startsWith(LIP)) {
-			stopId = 300000;
-		} else if (stopIds.startsWith(NIP)) {
-			stopId = 400000;
-		} else if (stopIds.startsWith(PCL)) {
-			stopId = 500000;
-		} else if (stopIds.startsWith(PIN)) {
-			stopId = 600000;
-		} else if (stopIds.startsWith(RIG)) {
-			stopId = 700000;
-		} else if (stopIds.startsWith(SAB)) {
-			stopId = 800000;
-		} else if (stopIds.startsWith(SGV)) {
-			stopId = 900000;
-		} else if (stopIds.startsWith(SLR)) {
-			stopId = 1000000;
-		} else if (stopIds.startsWith(SLZ)) {
-			stopId = 1100000;
-		} else if (stopIds.startsWith(VAU)) {
-			stopId = 1200000;
-		} else {
-			System.out.printf("\nStop doesn't have an ID (start with)! %s!\n", gStop);
-			System.exit(-1);
-			stopId = -1;
+		if (matcher.find()) {
+			int digits = Integer.parseInt(matcher.group());
+			int stopId;
+			if (stopIds.startsWith(DDO)) {
+				stopId = 100000;
+			} else if (stopIds.startsWith(HUD)) {
+				stopId = 200000;
+			} else if (stopIds.startsWith(LIP)) {
+				stopId = 300000;
+			} else if (stopIds.startsWith(NIP)) {
+				stopId = 400000;
+			} else if (stopIds.startsWith(PCL)) {
+				stopId = 500000;
+			} else if (stopIds.startsWith(PIN)) {
+				stopId = 600000;
+			} else if (stopIds.startsWith(RIG)) {
+				stopId = 700000;
+			} else if (stopIds.startsWith(SAB)) {
+				stopId = 800000;
+			} else if (stopIds.startsWith(SGV)) {
+				stopId = 900000;
+			} else if (stopIds.startsWith(SLR)) {
+				stopId = 1000000;
+			} else if (stopIds.startsWith(SLZ)) {
+				stopId = 1100000;
+			} else if (stopIds.startsWith(VAU)) {
+				stopId = 1200000;
+			} else {
+				System.out.printf("\nStop doesn't have an ID (start with)! %s!\n", gStop);
+				System.exit(-1);
+				stopId = -1;
+			}
+			if (stopIds.endsWith(A)) {
+				stopId += 1000;
+			} else if (stopIds.endsWith(B)) {
+				stopId += 2000;
+			} else if (stopIds.endsWith(C)) {
+				stopId += 3000;
+			} else if (stopIds.endsWith(D)) {
+				stopId += 4000;
+			} else if (stopIds.endsWith(E)) {
+				stopId += 5000;
+			} else if (stopIds.endsWith(F)) {
+				stopId += 6000;
+			} else if (stopIds.endsWith(G)) {
+				stopId += 7000;
+			} else if (stopIds.endsWith(H)) {
+				stopId += 8000;
+			} else {
+				System.out.printf("\nStop doesn't have an ID (end with)! %s!\n", gStop);
+				System.exit(-1);
+			}
+			return stopId + digits;
 		}
-		if (stopIds.endsWith(A)) {
-			stopId += 1000;
-		} else if (stopIds.endsWith(B)) {
-			stopId += 2000;
-		} else if (stopIds.endsWith(C)) {
-			stopId += 3000;
-		} else if (stopIds.endsWith(D)) {
-			stopId += 4000;
-		} else if (stopIds.endsWith(E)) {
-			stopId += 5000;
-		} else if (stopIds.endsWith(F)) {
-			stopId += 6000;
-		} else if (stopIds.endsWith(G)) {
-			stopId += 7000;
-		} else if (stopIds.endsWith(H)) {
-			stopId += 8000;
-		} else {
-			System.out.printf("\nStop doesn't have an ID (end with)! %s!\n", gStop);
-			System.exit(-1);
-		}
-		return stopId + digits;
+		System.out.printf("\nUnexpected stop ID for %s!\n", gStop);
+		System.exit(-1);
+		return -1;
 	}
 }
