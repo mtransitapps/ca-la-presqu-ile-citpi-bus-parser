@@ -53,6 +53,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	@Override
+	public boolean excludeRoute(GRoute gRoute) {
+		return super.excludeRoute(gRoute);
+	}
+
+	@Override
 	public boolean excludeCalendar(GCalendar gCalendar) {
 		if (this.serviceIds != null) {
 			return excludeUselessCalendar(gCalendar, this.serviceIds);
@@ -223,7 +228,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
-		map2.put(4l, new RouteTripSpec(4l, //
+		map2.put(4L, new RouteTripSpec(4L, //
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
 				1, MTrip.HEADSIGN_TYPE_STRING, FLORALIES) //
 				.addTripSort(0, //
@@ -240,7 +245,25 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 								"VAU258D", "VAU189D" //
 						})) //
 				.compileBothTripSort());
-		map2.put(5L + RID_ENDS_WITH_A, new RouteTripSpec(5L + RID_ENDS_WITH_A, //
+		map2.put(5L, new RouteTripSpec(5L, //
+				0, MTrip.HEADSIGN_TYPE_STRING, GARE_DORION, //
+				1, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL) //
+				.addTripSort(0, //
+						Arrays.asList(new String[] { //
+						"VAU61A", // Gare Vaudreuil
+								"VAU63A", // rue Boileau / rue Forbes
+								"VAU269C", // rue du Bicentenaire / rue Lefebvre
+								"VAU8A", // Gare Dorion
+						})) //
+				.addTripSort(1, //
+						Arrays.asList(new String[] { //
+						"VAU8A", // Gare Dorion
+								"VAU36C", // avenue Brodeur / rue St-Charles
+								"VAU56A", // ++
+								"VAU61A", // Gare Vaudreuil
+						})) //
+				.compileBothTripSort());
+		map2.put(5L + RID_ENDS_WITH_A, new RouteTripSpec(5L + RID_ENDS_WITH_A, // 5A
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_DORION, //
 				1, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL) //
 				.addTripSort(0, //
@@ -288,7 +311,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
 		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
-			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop, this);
 		}
 		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
 	}
@@ -304,7 +327,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()));
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()), this);
 		}
 		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
@@ -421,8 +444,6 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	private static final Pattern DIGITS = Pattern.compile("[\\d]+");
 
-	private static final String _MERGED = "_merged_";
-
 	private static final String DDO = "DDO";
 	private static final String HUD = "HUD";
 	private static final String LIP = "LIP";
@@ -443,10 +464,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			return Integer.valueOf(stopCode); // using stop code as stop ID
 		}
 		String stopIds = gStop.getStopId();
-		int index = stopIds.indexOf(_MERGED);
-		if (index >= 0) {
-			stopIds = stopIds.substring(0, index);
-		}
+		stopIds = CleanUtils.cleanMergedID(stopIds);
 		Matcher matcher = DIGITS.matcher(stopIds);
 		if (matcher.find()) {
 			int digits = Integer.parseInt(matcher.group());
