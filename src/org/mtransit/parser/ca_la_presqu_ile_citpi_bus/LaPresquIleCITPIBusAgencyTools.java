@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -460,11 +461,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public int getStopId(GStop gStop) {
 		String stopCode = getStopCode(gStop);
-		if (stopCode != null && stopCode.length() > 0) {
+		if (stopCode != null && stopCode.length() > 0 && Utils.isDigitsOnly(stopCode)) {
 			return Integer.valueOf(stopCode); // using stop code as stop ID
 		}
 		String stopIds = gStop.getStopId();
 		stopIds = CleanUtils.cleanMergedID(stopIds);
+		stopIds = stopIds.toUpperCase(Locale.ENGLISH);
 		Matcher matcher = DIGITS.matcher(stopIds);
 		if (matcher.find()) {
 			int digits = Integer.parseInt(matcher.group());
