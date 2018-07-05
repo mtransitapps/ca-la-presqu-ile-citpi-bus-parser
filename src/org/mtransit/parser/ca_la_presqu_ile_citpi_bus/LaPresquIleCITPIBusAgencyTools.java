@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.Pair;
@@ -137,85 +136,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return Long.parseLong(gRoute.getRouteShortName());
 	}
 
-	private static final String AGENCY_COLOR = "258FE8";
+	private static final String AGENCY_COLOR = "1F1F1F"; // DARK GRAY (from GTFS)
 
 	@Override
 	public String getAgencyColor() {
 		return AGENCY_COLOR;
-	}
-
-	private static final String COLOR_00336C = "00336C";
-	private static final String COLOR_6DC8BF = "6DC8BF";
-	private static final String COLOR_1E398D = "1E398D";
-	private static final String COLOR_F15A29 = "F15A29";
-	private static final String COLOR_EC008C = "EC008C";
-	private static final String COLOR_8DC63F = "8DC63F";
-	private static final String COLOR_00ADDC = "00ADDC";
-	private static final String COLOR_878A72 = "878A72";
-	private static final String COLOR_3B6E8F = "3B6E8F";
-	private static final String COLOR_B5121B = "B5121B";
-	private static final String COLOR_576423 = "576423";
-	private static final String COLOR_FFD200 = "FFD200";
-	private static final String COLOR_F15D5E = "F15D5E";
-	private static final String COLOR_E977AF = "E977AF";
-	private static final String COLOR_8D64AA = "8D64AA";
-	private static final String COLOR_B32317 = "B32317";
-	private static final String COLOR_C2A204 = "C2A204";
-	private static final String COLOR_B26062 = "B26062";
-	private static final String COLOR_A6228E = "A6228E";
-	private static final String COLOR_B2BB1E = "B2BB1E";
-	private static final String COLOR_E9979B = "E9979B";
-	private static final String COLOR_F58220 = "F58220";
-	private static final String COLOR_007D68 = "007D68";
-	private static final String COLOR_FDD504 = "FDD504";
-
-	@Override
-	public String getRouteColor(GRoute gRoute) {
-		if (StringUtils.isEmpty(gRoute.getRouteColor())) {
-			if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
-				int rsn = Integer.parseInt(gRoute.getRouteShortName());
-				switch (rsn) {
-				// @formatter:off
-				case 1: return COLOR_00336C;
-				case 2: return COLOR_6DC8BF;
-				case 3: return COLOR_1E398D;
-				case 4: return COLOR_F15A29;
-				case 5: return COLOR_EC008C;
-				case 6: return COLOR_8DC63F;
-				case 7: return COLOR_00ADDC;
-				case 8: return COLOR_878A72;
-				case 9: return COLOR_FFD200;
-				case 15: return COLOR_3B6E8F;
-				case 21: return COLOR_B5121B;
-				case 31: return COLOR_576423;
-				case 32: return COLOR_FFD200;
-				case 33: return COLOR_E9979B;
-				case 35: return COLOR_F15D5E;
-				case 40: return COLOR_E977AF;
-				case 41: return COLOR_8D64AA;
-				case 42: return COLOR_B32317;
-				case 43: return COLOR_C2A204;
-				case 44: return COLOR_B26062;
-				case 46: return COLOR_A6228E;
-				case 47: return COLOR_B2BB1E;
-				case 51: return COLOR_E9979B;
-				case 61: return COLOR_F58220;
-				case 91: return COLOR_007D68;
-				case 115: return COLOR_3B6E8F;
-				case 335: return COLOR_FDD504;
-				// @formatter:on
-				}
-			}
-			if ("5A".equalsIgnoreCase(gRoute.getRouteShortName())) {
-				return COLOR_EC008C;
-			} else if ("5B".equalsIgnoreCase(gRoute.getRouteShortName())) {
-				return COLOR_EC008C;
-			}
-			System.out.printf("\nUnexpected route color %s!\n", gRoute);
-			System.exit(-1);
-			return null;
-		}
-		return super.getRouteColor(gRoute);
 	}
 
 	private static final String VAUDREUIL = "Vaudreuil";
