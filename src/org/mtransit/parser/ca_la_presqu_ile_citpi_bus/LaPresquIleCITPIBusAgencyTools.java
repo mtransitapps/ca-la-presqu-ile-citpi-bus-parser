@@ -164,16 +164,15 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				1, MTrip.HEADSIGN_TYPE_STRING, FLORALIES) //
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
-						"VAU189D", "VAU58B", //
-								"VAU259C", "VAU262A", //
-								"VAU91B", "VAU61A" //
+						"72606", // "VAU189D", // rue des Floralies / rue des Perce-Neige
+								"72605", // ++
+								"72900", // "VAU61A", // Gare Vaudreuil
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
-						"VAU61A", "VAU91D", //
-								"VAU262C", "VAU58A", //
-								"VAU58D", //
-								"VAU258D", "VAU189D" //
+						"72900", // "VAU61A", // Gare Vaudreuil
+								"72948", // ++
+								"72606", // "VAU189D", // rue des Floralies / rue des Perce-Neige
 						})) //
 				.compileBothTripSort());
 		map2.put(5L, new RouteTripSpec(5L, //
@@ -181,17 +180,15 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				1, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL) //
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
-						"VAU61A", // Gare Vaudreuil
-								"VAU63A", // rue Boileau / rue Forbes
-								"VAU269C", // rue du Bicentenaire / rue Lefebvre
-								"VAU8A", // Gare Dorion
+						"72900", // "VAU61A", // Gare Vaudreuil
+								"72911", // "VAU63A", // rue Boileau / rue Forbes
+								"72946", // "VAU8A", // Gare Dorion
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
-						"VAU8A", // Gare Dorion
-								"VAU36C", // avenue Brodeur / rue St-Charles
-								"VAU56A", // ++
-								"VAU61A", // Gare Vaudreuil
+						"72946", // "VAU8A", // Gare Dorion
+								"72741", // "VAU36C", // avenue Brodeur / rue St-Charles
+								"72900", // "VAU61A", // Gare Vaudreuil
 						})) //
 				.compileBothTripSort());
 		map2.put(5L + RID_ENDS_WITH_A, new RouteTripSpec(5L + RID_ENDS_WITH_A, // 5A
@@ -211,29 +208,29 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 								"VAU61A", // Gare Vaudreuil
 						})) //
 				.compileBothTripSort());
-		map2.put(9l, new RouteTripSpec(9l, //
+		map2.put(9L, new RouteTripSpec(9L, //
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
 				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
-						"VAU332B", // 2e avenue / avenue Curé-David
-								"VAU609A", //
-								"VAU608B", //
-								"VAU607B", //
-								"VAU608D", // ==
-								"VAU603B", //
-								"VAU595B", //
-								"VAU61A", // Gare Vaudreuil
+						"72735", // "VAU332B", // 2e avenue / avenue Curé-David
+								"72893", // "VAU609A", // 2e avenue / avenue Marier
+								"72891", // "VAU608B", // avenue Marier / rue des Merisiers
+								"72889", // "VAU607B", // != avenue Marier / rue des Noisetiers
+								"72892", // "VAU608D", // <> avenue Marier / rue des Merisiers
+								"72887", // "VAU603B", // == avenue Marier / rue des Tilleuls
+								"72871", // "VAU595B", // avenue Marier / rue de Tonnancour
+								"72900", // "VAU61A", // Gare Vaudreuil
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
-						"VAU61A", // Gare Vaudreuil
-								"VAU596D", //
-								"VAU607D", //
-								"VAU608D", // ==
-								"VAU609D", //
-								"VAU332C", // !=
-								"VAU332B" // 2e avenue / avenue Curé-David
+						"72900", // "VAU61A", // Gare Vaudreuil
+								"72874", // "VAU596D", // avenue Marier / rue Shubert
+								"72890", // "VAU607D", // avenue Marier / rue des Noisetiers
+								"72892", // "VAU608D", // <> avenue Marier / rue des Merisiers
+								"72894", // "VAU609D", // != avenue Marier / 2e avenue
+								"72736", // "VAU332C", // != 2e avenue / avenue Curé-David
+								"72735", // "VAU332B", // 2e avenue / avenue Curé-David
 						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
