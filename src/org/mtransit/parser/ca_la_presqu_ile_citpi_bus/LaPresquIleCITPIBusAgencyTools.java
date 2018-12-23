@@ -213,11 +213,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
-						"72735", // "VAU332B", // 2e avenue / avenue Curé-David
+						"72831", // rue Valois / face au tunnel <=
+								"72735", // "VAU332B", // 2e avenue / avenue Curé-David
 								"72893", // "VAU609A", // 2e avenue / avenue Marier
 								"72891", // "VAU608B", // avenue Marier / rue des Merisiers
 								"72889", // "VAU607B", // != avenue Marier / rue des Noisetiers
-								"72892", // "VAU608D", // <> avenue Marier / rue des Merisiers
+								"72892", // "VAU608D", // <> avenue Marier / rue des Merisiers <=
 								"72887", // "VAU603B", // == avenue Marier / rue des Tilleuls
 								"72871", // "VAU595B", // avenue Marier / rue de Tonnancour
 								"72900", // "VAU61A", // Gare Vaudreuil
@@ -227,10 +228,10 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 						"72900", // "VAU61A", // Gare Vaudreuil
 								"72874", // "VAU596D", // avenue Marier / rue Shubert
 								"72890", // "VAU607D", // avenue Marier / rue des Noisetiers
-								"72892", // "VAU608D", // <> avenue Marier / rue des Merisiers
+								"72892", // "VAU608D", // <> avenue Marier / rue des Merisiers =>
 								"72894", // "VAU609D", // != avenue Marier / 2e avenue
 								"72736", // "VAU332C", // != 2e avenue / avenue Curé-David
-								"72735", // "VAU332B", // 2e avenue / avenue Curé-David
+								"72831", // rue Valois / face au tunnel
 						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
