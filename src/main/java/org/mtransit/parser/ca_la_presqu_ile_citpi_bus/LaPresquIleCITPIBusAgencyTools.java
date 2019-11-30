@@ -27,8 +27,8 @@ import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
-// https://rtm.quebec/en/about/open-data
-// https://rtm.quebec/xdata/citpi/google_transit.zip
+// https://exo.quebec/en/about/open-data
+// https://exo.quebec/xdata/citpi/google_transit.zip
 public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(String[] args) {
@@ -47,7 +47,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	public void start(String[] args) {
 		System.out.printf("\nGenerating CITPI bus data...");
 		long start = System.currentTimeMillis();
-		this.serviceIds = extractUsefulServiceIds(args, this);
+		this.serviceIds = extractUsefulServiceIds(args, this, true);
 		super.start(args);
 		System.out.printf("\nGenerating CITPI bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
