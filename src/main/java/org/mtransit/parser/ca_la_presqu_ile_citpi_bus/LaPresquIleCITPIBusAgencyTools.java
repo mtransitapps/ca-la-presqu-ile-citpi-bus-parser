@@ -167,13 +167,13 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 						"72606", // rue des Floralies / rue des Perce-Neige
 								"72605", // ++
 								"72912", // ==
-								"72975", // != Gare Vaudreuil terminus temporaire été 2019 =>
+								"72980", // != Terminus Vaudreuil Quai 4
 								"72900", // != Gare Vaudreuil =>
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
 						"72900", // != Gare Vaudreuil <=
-								"72975", // != Gare Vaudreuil terminus temporaire été 2019 <=
+								"72980", // != Terminus Vaudreuil Quai 4
 								"72911", // ==
 								"72948", // ++
 								"72606", // rue des Floralies / rue des Perce-Neige
@@ -185,7 +185,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				.addTripSort(0, //
 						Arrays.asList(new String[] { //
 						"72900", // != Gare Vaudreuil <=
-								"72975", // != Gare Vaudreuil terminus temporaire été 2019 <=
+								"72982", // != Terminus Vaudreuil Quai 6
 								"72911", // == rue Boileau / rue Forbes
 								"72946", // Gare Dorion
 						})) //
@@ -194,7 +194,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 						"72946", // Gare Dorion
 								"72741", // avenue Brodeur / rue St-Charles
 								"72912", // ==
-								"72975", // != Gare Vaudreuil terminus temporaire été 2019 =>
+								"72982", // != Terminus Vaudreuil Quai 6
 								"72900", // != Gare Vaudreuil =>
 						})) //
 				.compileBothTripSort());
@@ -208,13 +208,13 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 								"72887", // != <> avenue Marier / rue des Tilleuls <=
 								"72885", // ==
 								"72621", // ==
-								"72975", // != Gare Vaudreuil terminus temporaire été 2019 =>
+								"72981", // != Terminus Vaudreuil Quai 5
 								"72900", // != Gare Vaudreuil =>
 						})) //
 				.addTripSort(1, //
 						Arrays.asList(new String[] { //
 						"72900", // != Gare Vaudreuil <=
-								"72975", // != Gare Vaudreuil terminus temporaire été 2019 <=
+								"72981", // != Terminus Vaudreuil Quai 5
 								"72623", // ==
 								"72892", // == != avenue Marier / rue des Merisiers
 								"72887", // != <> avenue Marier / rue des Tilleuls =>
