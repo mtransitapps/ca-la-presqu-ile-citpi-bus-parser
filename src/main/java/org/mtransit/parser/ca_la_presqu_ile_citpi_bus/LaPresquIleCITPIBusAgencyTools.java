@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
+import org.mtransit.parser.MTLog;
 import org.mtransit.parser.Pair;
 import org.mtransit.parser.SplitUtils;
 import org.mtransit.parser.SplitUtils.RouteTripSpec;
@@ -45,21 +46,16 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public void start(String[] args) {
-		System.out.printf("\nGenerating CITPI bus data...");
+		MTLog.log("Generating CITPI bus data...");
 		long start = System.currentTimeMillis();
 		this.serviceIds = extractUsefulServiceIds(args, this, true);
 		super.start(args);
-		System.out.printf("\nGenerating CITPI bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
+		MTLog.log("Generating CITPI bus data... DONE in %s.", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
 
 	@Override
 	public boolean excludingAll() {
 		return this.serviceIds != null && this.serviceIds.isEmpty();
-	}
-
-	@Override
-	public boolean excludeRoute(GRoute gRoute) {
-		return super.excludeRoute(gRoute);
 	}
 
 	@Override
@@ -134,9 +130,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 					return RID_ENDS_WITH_B + digits;
 				}
 			}
-			System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
-			System.exit(-1);
-			return -1L;
+			throw new MTLog.Fatal("Unexpected route ID for %s!", gRoute);
 		}
 		return Long.parseLong(gRoute.getRouteShortName());
 	}
@@ -156,71 +150,71 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final String POINTE_CLAIRE = "Pte-Claire";
 	private static final String SAINTE_ANNE_DE_BELLEVUE = "Ste-Anne-De-Bellevue";
 
-	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
+	private static final HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
-		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
+		HashMap<Long, RouteTripSpec> map2 = new HashMap<>();
 		map2.put(4L, new RouteTripSpec(4L, //
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
 				1, MTrip.HEADSIGN_TYPE_STRING, FLORALIES) //
 				.addTripSort(0, //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"72606", // rue des Floralies / rue des Perce-Neige
 								"72605", // ++
 								"72912", // ==
 								"72980", // != Terminus Vaudreuil Quai 4
-								"72900", // != Gare Vaudreuil =>
-						})) //
+								"72900" // != Gare Vaudreuil =>
+						)) //
 				.addTripSort(1, //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"72900", // != Gare Vaudreuil <=
 								"72980", // != Terminus Vaudreuil Quai 4
 								"72911", // ==
 								"72948", // ++
-								"72606", // rue des Floralies / rue des Perce-Neige
-						})) //
+								"72606" // rue des Floralies / rue des Perce-Neige
+						)) //
 				.compileBothTripSort());
 		map2.put(5L, new RouteTripSpec(5L, //
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_DORION, //
 				1, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL) //
 				.addTripSort(0, //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"72900", // != Gare Vaudreuil <=
 								"72982", // != Terminus Vaudreuil Quai 6
 								"72911", // == rue Boileau / rue Forbes
-								"72946", // Gare Dorion
-						})) //
+								"72946" // Gare Dorion
+						)) //
 				.addTripSort(1, //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"72946", // Gare Dorion
 								"72741", // avenue Brodeur / rue St-Charles
 								"72912", // ==
 								"72982", // != Terminus Vaudreuil Quai 6
-								"72900", // != Gare Vaudreuil =>
-						})) //
+								"72900" // != Gare Vaudreuil =>
+						)) //
 				.compileBothTripSort());
 		map2.put(9L, new RouteTripSpec(9L, //
 				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
 				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
 				.addTripSort(0, //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"72831", // rue Valois / face au tunnel <=
 								"72889", // != avenue Marier / rue des Noisetiers
 								"72887", // != <> avenue Marier / rue des Tilleuls <=
 								"72885", // ==
 								"72621", // ==
 								"72981", // != Terminus Vaudreuil Quai 5
-								"72900", // != Gare Vaudreuil =>
-						})) //
+								"72900" // != Gare Vaudreuil =>
+						)) //
 				.addTripSort(1, //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"72900", // != Gare Vaudreuil <=
 								"72981", // != Terminus Vaudreuil Quai 5
 								"72623", // ==
 								"72892", // == != avenue Marier / rue des Merisiers
 								"72887", // != <> avenue Marier / rue des Tilleuls =>
 								"72894", // != avenue Marier / 2e avenue
-								"72831", // rue Valois / face au tunnel =>
-						})) //
+								"72831" // rue Valois / face au tunnel =>
+						)) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
 	}
@@ -271,9 +265,24 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			}
 			if (Arrays.asList( //
 					"Navette Dumberry", // <>
+					"John-Abbott" + " - " + POINTE_CLAIRE, //
+					"John-Abbott" //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("John-Abbott", mTrip.getHeadsignId());
+				return true;
+			}
+			if (Arrays.asList( //
+					"Navette Dumberry", // <>
 					GARE_VAUDREUIL //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(GARE_VAUDREUIL, mTrip.getHeadsignId());
+				return true;
+			}
+			if (Arrays.asList( //
+					"Navette Dumberry", // <>
+					"Terminus " + VAUDREUIL //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Terminus " + VAUDREUIL, mTrip.getHeadsignId());
 				return true;
 			}
 		} else if (mTrip.getRouteId() == 15L) {
@@ -292,12 +301,26 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
 				return true;
 			}
+			if (Arrays.asList( //
+					"Hudson", //
+					"Terminus " + VAUDREUIL //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Terminus " + VAUDREUIL, mTrip.getHeadsignId());
+				return true;
+			}
 		} else if (mTrip.getRouteId() == 35L) {
 			if (Arrays.asList( //
 					"Île-Perrot", //
 					SAINTE_ANNE_DE_BELLEVUE //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
+				return true;
+			}
+			if (Arrays.asList( //
+					"Île-Perrot", //
+					"Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
 				return true;
 			}
 		} else if (mTrip.getRouteId() == 335L) {
@@ -307,17 +330,23 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
 				return true;
-			} else if (Arrays.asList( //
-					"Gare Pincourt T-V", //
-					GARE_DORION //
+			}
+			if (Arrays.asList( //
+					"Île-Perrot", //
+					"Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE //
 					).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(GARE_DORION, mTrip.getHeadsignId());
+				mTrip.setHeadsignString("Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
+				return true;
+			}
+			if (Arrays.asList( //
+					"Gare Pincourt" + " " + "Terasse-Vaudreuil", //
+					"Pincourt" + " - " + GARE_DORION //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Pincourt" + " - " + GARE_DORION, mTrip.getHeadsignId());
 				return true;
 			}
 		}
-		System.out.printf("\nUnexpected trips to merge %s & %s!\n", mTrip, mTripToMerge);
-		System.exit(-1);
-		return false;
+		throw new MTLog.Fatal("Unexpected trips to merge %s & %s!", mTrip, mTripToMerge);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
@@ -342,11 +371,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
 
-	private static final Pattern START_WITH_FACE_A = Pattern.compile("^(face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final Pattern START_WITH_FACE_A = Pattern.compile("^(face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.CANON_EQ);
 	private static final Pattern START_WITH_FACE_AU = Pattern.compile("^(face au )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern START_WITH_FACE = Pattern.compile("^(face )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-	private static final Pattern SPACE_FACE_A = Pattern.compile("( face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final Pattern SPACE_FACE_A = Pattern.compile("( face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.CANON_EQ);
 	private static final Pattern SPACE_WITH_FACE_AU = Pattern.compile("( face au )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern SPACE_WITH_FACE = Pattern.compile("( face )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
@@ -428,9 +457,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			} else if (stopIds.startsWith(VAU)) {
 				stopId = 1200000;
 			} else {
-				System.out.printf("\nStop doesn't have an ID (start with)! %s!\n", gStop);
-				System.exit(-1);
-				stopId = -1;
+				throw new MTLog.Fatal("Stop doesn't have an ID (start with)! %s!", gStop);
 			}
 			if (stopIds.endsWith(A)) {
 				stopId += 1000;
@@ -449,13 +476,10 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			} else if (stopIds.endsWith(H)) {
 				stopId += 8000;
 			} else {
-				System.out.printf("\nStop doesn't have an ID (end with)! %s!\n", gStop);
-				System.exit(-1);
+				throw new MTLog.Fatal("Stop doesn't have an ID (end with)! %s!", gStop);
 			}
 			return stopId + digits;
 		}
-		System.out.printf("\nUnexpected stop ID for %s!\n", gStop);
-		System.exit(-1);
-		return -1;
+		throw new MTLog.Fatal("Unexpected stop ID for %s!", gStop);
 	}
 }
