@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
@@ -28,11 +30,13 @@ import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
+import static org.mtransit.parser.Constants.EMPTY;
+
 // https://exo.quebec/en/about/open-data
 // https://exo.quebec/xdata/citpi/google_transit.zip
 public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
-	public static void main(String[] args) {
+	public static void main(@Nullable String[] args) {
 		if (args == null || args.length == 0) {
 			args = new String[3];
 			args[0] = "input/gtfs.zip";
@@ -42,6 +46,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		new LaPresquIleCITPIBusAgencyTools().start(args);
 	}
 
+	@Nullable
 	private HashSet<String> serviceIds;
 
 	@Override
@@ -248,7 +253,10 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
+		mTrip.setHeadsignString(
+			cleanTripHeadsign(gTrip.getTripHeadsignOrDefault()),
+			gTrip.getDirectionIdOrDefault()
+		);
 	}
 
 	@Override
@@ -283,6 +291,14 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 					"Terminus " + VAUDREUIL //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString("Terminus " + VAUDREUIL, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 10L) {
+			if (Arrays.asList( //
+					"John-Abbott", //
+					"Pte-Claire" //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Pte-Claire", mTrip.getHeadsignId());
 				return true;
 			}
 		} else if (mTrip.getRouteId() == 15L) {
@@ -323,6 +339,21 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 				mTrip.setHeadsignString("Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
 				return true;
 			}
+		} else if (mTrip.getRouteId() == 44L) {
+			if (Arrays.asList( //
+					"Gare " + "Île-Perrot", //
+					SAINTE_ANNE_DE_BELLEVUE //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
+				return true;
+			}
+			if (Arrays.asList( //
+					"Gare " + "Île-Perrot", //
+					"Gare Pincourt - Tsse-Vaudreuil" //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Gare Pincourt - Tsse-Vaudreuil", mTrip.getHeadsignId());
+				return true;
+			}
 		} else if (mTrip.getRouteId() == 335L) {
 			if (Arrays.asList( //
 					"Île-Perrot", //
@@ -349,11 +380,9 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		throw new MTLog.Fatal("Unexpected trips to merge %s & %s!", mTrip, mTripToMerge);
 	}
 
-	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
-	private static final String DIRECTION_REPLACEMENT = "";
+	private static final Pattern DIRECTION_ = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
 
-	private static final Pattern SECTEUR = Pattern.compile("(secteur[s]? )", Pattern.CASE_INSENSITIVE);
-	private static final String SECTEUR_REPLACEMENT = "";
+	private static final Pattern SECTEUR_ = Pattern.compile("(secteur[s]? )", Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern SERVICE = Pattern.compile("(service) ([a|p]m)", Pattern.CASE_INSENSITIVE);
 	private static final String SERVICE_REPLACEMENT = "$2";
@@ -363,8 +392,8 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String cleanTripHeadsign(String tripHeadsign) {
-		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
-		tripHeadsign = SECTEUR.matcher(tripHeadsign).replaceAll(SECTEUR_REPLACEMENT);
+		tripHeadsign = DIRECTION_.matcher(tripHeadsign).replaceAll(EMPTY);
+		tripHeadsign = SECTEUR_.matcher(tripHeadsign).replaceAll(EMPTY);
 		tripHeadsign = SERVICE.matcher(tripHeadsign).replaceAll(SERVICE_REPLACEMENT);
 		tripHeadsign = POINT.matcher(tripHeadsign).replaceAll(POINT_REPLACEMENT);
 		tripHeadsign = CleanUtils.cleanStreetTypesFRCA(tripHeadsign);
@@ -396,10 +425,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	private static final String ZERO = "0";
 
+	@NotNull
 	@Override
 	public String getStopCode(GStop gStop) {
 		if (ZERO.equals(gStop.getStopCode())) {
-			return null;
+			return EMPTY;
 		}
 		return super.getStopCode(gStop);
 	}
@@ -422,8 +452,8 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public int getStopId(GStop gStop) {
 		String stopCode = getStopCode(gStop);
-		if (stopCode != null && stopCode.length() > 0 && Utils.isDigitsOnly(stopCode)) {
-			return Integer.valueOf(stopCode); // using stop code as stop ID
+		if (stopCode.length() > 0 && Utils.isDigitsOnly(stopCode)) {
+			return Integer.parseInt(stopCode); // using stop code as stop ID
 		}
 		String stopIds = gStop.getStopId();
 		stopIds = CleanUtils.cleanMergedID(stopIds);
