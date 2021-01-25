@@ -5,9 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
-import org.mtransit.parser.Pair;
-import org.mtransit.parser.SplitUtils;
-import org.mtransit.parser.SplitUtils.RouteTripSpec;
 import org.mtransit.parser.Utils;
 import org.mtransit.parser.gtfs.data.GCalendar;
 import org.mtransit.parser.gtfs.data.GCalendarDate;
@@ -15,17 +12,11 @@ import org.mtransit.parser.gtfs.data.GRoute;
 import org.mtransit.parser.gtfs.data.GSpec;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.gtfs.data.GTrip;
-import org.mtransit.parser.gtfs.data.GTripStop;
 import org.mtransit.parser.mt.data.MAgency;
 import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
-import org.mtransit.parser.mt.data.MTripStop;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -151,118 +142,8 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return AGENCY_COLOR;
 	}
 
-	private static final String VAUDREUIL = "Vaudreuil";
-	private static final String GARE_VAUDREUIL = "Gare " + VAUDREUIL;
-	private static final String GARE_DORION = "Gare Dorion";
-	private static final String MARIER = "Marier";
-	private static final String FLORALIES = "Floralies";
-	private static final String POINTE_CLAIRE = "Pte-Claire";
-	private static final String SAINTE_ANNE_DE_BELLEVUE = "Ste-Anne-De-Bellevue";
-
-	private static final HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
-
-	static {
-		HashMap<Long, RouteTripSpec> map2 = new HashMap<>();
-		//noinspection deprecation
-		map2.put(4L, new RouteTripSpec(4L, //
-				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
-				1, MTrip.HEADSIGN_TYPE_STRING, FLORALIES) //
-				.addTripSort(0, //
-						Arrays.asList( //
-								"72606", // rue des Floralies / rue des Perce-Neige
-								"72605", // ++
-								"72912", // ==
-								"72980", // != Term Vaudreuil Quai 4
-								"72900" // != Gare Vaudreuil =>
-						)) //
-				.addTripSort(1, //
-						Arrays.asList( //
-								"72900", // != Gare Vaudreuil <=
-								"72980", // != Term Vaudreuil Quai 4
-								"72911", // ==
-								"72948", // ++
-								"72606" // rue des Floralies / rue des Perce-Neige
-						)) //
-				.compileBothTripSort());
-		//noinspection deprecation
-		map2.put(5L, new RouteTripSpec(5L, //
-				0, MTrip.HEADSIGN_TYPE_STRING, GARE_DORION, //
-				1, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL) //
-				.addTripSort(0, //
-						Arrays.asList( //
-								"72900", // != Gare Vaudreuil <=
-								"72982", // != Term Vaudreuil Quai 6
-								"72911", // == rue Boileau / rue Forbes
-								"72946" // Gare Dorion
-						)) //
-				.addTripSort(1, //
-						Arrays.asList( //
-								"72946", // Gare Dorion
-								"72741", // avenue Brodeur / rue St-Charles
-								"72912", // ==
-								"72982", // != Term Vaudreuil Quai 6
-								"72900" // != Gare Vaudreuil =>
-						)) //
-				.compileBothTripSort());
-		//noinspection deprecation
-		map2.put(9L, new RouteTripSpec(9L, //
-				0, MTrip.HEADSIGN_TYPE_STRING, GARE_VAUDREUIL, //
-				1, MTrip.HEADSIGN_TYPE_STRING, MARIER) //
-				.addTripSort(0, //
-						Arrays.asList( //
-								"72831", // rue Valois / face au tunnel <=
-								"72889", // != avenue Marier / rue des Noisetiers
-								"72887", // != <> avenue Marier / rue des Tilleuls <=
-								"72885", // ==
-								"72621", // ==
-								"72981", // != Term Vaudreuil Quai 5
-								"72900" // != Gare Vaudreuil =>
-						)) //
-				.addTripSort(1, //
-						Arrays.asList( //
-								"72900", // != Gare Vaudreuil <=
-								"72981", // != Term Vaudreuil Quai 5
-								"72623", // ==
-								"72892", // == != avenue Marier / rue des Merisiers
-								"72887", // != <> avenue Marier / rue des Tilleuls =>
-								"72894", // != avenue Marier / 2e avenue
-								"72831" // rue Valois / face au tunnel =>
-						)) //
-				.compileBothTripSort());
-		ALL_ROUTE_TRIPS2 = map2;
-	}
-
-	@Override
-	public int compareEarly(long routeId, @NotNull List<MTripStop> list1, @NotNull List<MTripStop> list2, @NotNull MTripStop ts1, @NotNull MTripStop ts2, @NotNull GStop ts1GStop, @NotNull GStop ts2GStop) {
-		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
-			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop, this);
-		}
-		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
-	}
-
-	@NotNull
-	@Override
-	public ArrayList<MTrip> splitTrip(@NotNull MRoute mRoute, @Nullable GTrip gTrip, @NotNull GSpec gtfs) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return ALL_ROUTE_TRIPS2.get(mRoute.getId()).getAllTrips();
-		}
-		return super.splitTrip(mRoute, gTrip, gtfs);
-	}
-
-	@NotNull
-	@Override
-	public Pair<Long[], Integer[]> splitTripStop(@NotNull MRoute mRoute, @NotNull GTrip gTrip, @NotNull GTripStop gTripStop, @NotNull ArrayList<MTrip> splitTrips, @NotNull GSpec routeGTFS) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()), this);
-		}
-		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
-	}
-
 	@Override
 	public void setTripHeadsign(@NotNull MRoute mRoute, @NotNull MTrip mTrip, @NotNull GTrip gTrip, @NotNull GSpec gtfs) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return; // split
-		}
 		mTrip.setHeadsignString(
 				cleanTripHeadsign(gTrip.getTripHeadsignOrDefault()),
 				gTrip.getDirectionIdOrDefault()
@@ -270,123 +151,24 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	@Override
-	public boolean mergeHeadsign(@NotNull MTrip mTrip, @NotNull MTrip mTripToMerge) {
-		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
-		if (mTrip.getRouteId() == 7L) {
-			if (Arrays.asList( //
-					"Navette Dumberry", // <>
-					SAINTE_ANNE_DE_BELLEVUE, //
-					POINTE_CLAIRE //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(POINTE_CLAIRE, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Navette Dumberry", // <>
-					"John-Abbott" + " - " + POINTE_CLAIRE, //
-					"John-Abbott" //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("John-Abbott", mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Navette Dumberry", // <>
-					GARE_VAUDREUIL //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(GARE_VAUDREUIL, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Navette Dumberry", // <>
-					"Term " + VAUDREUIL //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Term " + VAUDREUIL, mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 10L) {
-			if (Arrays.asList( //
-					"John-Abbott", //
-					"Pte-Claire" //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Pte-Claire", mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 15L) {
-			if (Arrays.asList( //
-					GARE_VAUDREUIL, //
-					VAUDREUIL //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 21L) {
-			if (Arrays.asList( //
-					"Hudson", //
-					VAUDREUIL //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(VAUDREUIL, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Hudson", //
-					"Term " + VAUDREUIL //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Term " + VAUDREUIL, mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 35L) {
-			if (Arrays.asList( //
-					"Île-Perrot", //
-					SAINTE_ANNE_DE_BELLEVUE //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Île-Perrot", //
-					"Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 44L) {
-			if (Arrays.asList( //
-					"Gare " + "Île-Perrot", //
-					SAINTE_ANNE_DE_BELLEVUE //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Gare " + "Île-Perrot", //
-					"Gare Pincourt - Tsse-Vaudreuil" //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Gare Pincourt - Tsse-Vaudreuil", mTrip.getHeadsignId());
-				return true;
-			}
-		} else if (mTrip.getRouteId() == 335L) {
-			if (Arrays.asList( //
-					"Île-Perrot", //
-					SAINTE_ANNE_DE_BELLEVUE //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString(SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Île-Perrot", //
-					"Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Île-Perrot" + " - " + SAINTE_ANNE_DE_BELLEVUE, mTrip.getHeadsignId());
-				return true;
-			}
-			if (Arrays.asList( //
-					"Gare Pincourt" + " " + "Terasse-Vaudreuil", //
-					"Pincourt" + " - " + GARE_DORION //
-			).containsAll(headsignsValues)) {
-				mTrip.setHeadsignString("Pincourt" + " - " + GARE_DORION, mTrip.getHeadsignId());
-				return true;
-			}
+	public boolean directionFinderEnabled() {
+		return true;
+	}
+
+	@NotNull
+	@Override
+	public String cleanDirectionHeadsign(boolean fromStopName, @NotNull String directionHeadSign) {
+		if (directionHeadSign.endsWith("AM")) {
+			return "AM";
+		} else if (directionHeadSign.endsWith("PM")) {
+			return "PM";
 		}
+		directionHeadSign = super.cleanDirectionHeadsign(fromStopName, directionHeadSign);
+		return directionHeadSign;
+	}
+
+	@Override
+	public boolean mergeHeadsign(@NotNull MTrip mTrip, @NotNull MTrip mTripToMerge) {
 		throw new MTLog.Fatal("Unexpected trips to merge %s & %s!", mTrip, mTripToMerge);
 	}
 
@@ -432,6 +214,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		gStopName = AVENUE.matcher(gStopName).replaceAll(AVENUE_REPLACEMENT);
 		gStopName = Utils.replaceAll(gStopName, START_WITH_FACES, CleanUtils.SPACE);
 		gStopName = Utils.replaceAll(gStopName, SPACE_FACES, CleanUtils.SPACE);
+		gStopName = CleanUtils.cleanStreetTypesFRCA(gStopName);
 		return CleanUtils.cleanLabelFR(gStopName);
 	}
 
