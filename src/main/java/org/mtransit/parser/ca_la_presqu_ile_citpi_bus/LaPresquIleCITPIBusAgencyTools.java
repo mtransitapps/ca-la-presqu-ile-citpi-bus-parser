@@ -2,21 +2,15 @@ package org.mtransit.parser.ca_la_presqu_ile_citpi_bus;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mtransit.parser.CleanUtils;
+import org.mtransit.commons.CharUtils;
+import org.mtransit.commons.CleanUtils;
+import org.mtransit.commons.RegexUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
-import org.mtransit.parser.Utils;
-import org.mtransit.parser.gtfs.data.GCalendar;
-import org.mtransit.parser.gtfs.data.GCalendarDate;
 import org.mtransit.parser.gtfs.data.GRoute;
-import org.mtransit.parser.gtfs.data.GSpec;
 import org.mtransit.parser.gtfs.data.GStop;
-import org.mtransit.parser.gtfs.data.GTrip;
 import org.mtransit.parser.mt.data.MAgency;
-import org.mtransit.parser.mt.data.MRoute;
-import org.mtransit.parser.mt.data.MTrip;
 
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,55 +21,19 @@ import static org.mtransit.parser.Constants.EMPTY;
 // https://exo.quebec/xdata/citpi/google_transit.zip
 public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
-	public static void main(@Nullable String[] args) {
-		if (args == null || args.length == 0) {
-			args = new String[3];
-			args[0] = "input/gtfs.zip";
-			args[1] = "../../mtransitapps/ca-la-presqu-ile-citpi-bus-android/res/raw/";
-			args[2] = ""; // files-prefix
-		}
+	public static void main(@NotNull String[] args) {
 		new LaPresquIleCITPIBusAgencyTools().start(args);
 	}
 
-	@Nullable
-	private HashSet<Integer> serviceIdInts;
-
 	@Override
-	public void start(@NotNull String[] args) {
-		MTLog.log("Generating CITPI bus data...");
-		long start = System.currentTimeMillis();
-		this.serviceIdInts = extractUsefulServiceIdInts(args, this, true);
-		super.start(args);
-		MTLog.log("Generating CITPI bus data... DONE in %s.", Utils.getPrettyDuration(System.currentTimeMillis() - start));
+	public boolean defaultExcludeEnabled() {
+		return true;
 	}
 
+	@NotNull
 	@Override
-	public boolean excludingAll() {
-		return this.serviceIdInts != null && this.serviceIdInts.isEmpty();
-	}
-
-	@Override
-	public boolean excludeCalendar(@NotNull GCalendar gCalendar) {
-		if (this.serviceIdInts != null) {
-			return excludeUselessCalendarInt(gCalendar, this.serviceIdInts);
-		}
-		return super.excludeCalendar(gCalendar);
-	}
-
-	@Override
-	public boolean excludeCalendarDate(@NotNull GCalendarDate gCalendarDates) {
-		if (this.serviceIdInts != null) {
-			return excludeUselessCalendarDateInt(gCalendarDates, this.serviceIdInts);
-		}
-		return super.excludeCalendarDate(gCalendarDates);
-	}
-
-	@Override
-	public boolean excludeTrip(@NotNull GTrip gTrip) {
-		if (this.serviceIdInts != null) {
-			return excludeUselessTripInt(gTrip, this.serviceIdInts);
-		}
-		return super.excludeTrip(gTrip);
+	public String getAgencyName() {
+		return "exo PI";
 	}
 
 	@NotNull
@@ -86,8 +44,7 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@NotNull
 	@Override
-	public String getRouteLongName(@NotNull GRoute gRoute) {
-		String routeLongName = gRoute.getRouteLongNameOrDefault();
+	public String cleanRouteLongName(@NotNull String routeLongName) {
 		routeLongName = CleanUtils.SAINT.matcher(routeLongName).replaceAll(CleanUtils.SAINT_REPLACEMENT);
 		routeLongName = CleanUtils.cleanSlashes(routeLongName);
 		return CleanUtils.cleanLabel(routeLongName);
@@ -119,10 +76,10 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public long getRouteId(@NotNull GRoute gRoute) {
-		if (!Utils.isDigitsOnly(gRoute.getRouteShortName())) {
-			Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
+		if (!CharUtils.isDigitsOnly(gRoute.getRouteShortName())) {
+			final Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
 			if (matcher.find()) {
-				int digits = Integer.parseInt(matcher.group());
+				final int digits = Integer.parseInt(matcher.group());
 				if (gRoute.getRouteShortName().endsWith(A)) {
 					return RID_ENDS_WITH_A + digits;
 				} else if (gRoute.getRouteShortName().endsWith(B)) {
@@ -143,14 +100,6 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	@Override
-	public void setTripHeadsign(@NotNull MRoute mRoute, @NotNull MTrip mTrip, @NotNull GTrip gTrip, @NotNull GSpec gtfs) {
-		mTrip.setHeadsignString(
-				cleanTripHeadsign(gTrip.getTripHeadsignOrDefault()),
-				gTrip.getDirectionIdOrDefault()
-		);
-	}
-
-	@Override
 	public boolean directionFinderEnabled() {
 		return true;
 	}
@@ -167,28 +116,15 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return directionHeadSign;
 	}
 
-	@Override
-	public boolean mergeHeadsign(@NotNull MTrip mTrip, @NotNull MTrip mTripToMerge) {
-		throw new MTLog.Fatal("Unexpected trips to merge %s & %s!", mTrip, mTripToMerge);
-	}
-
-	private static final Pattern DIRECTION_ = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
-
-	private static final Pattern SECTEUR_ = Pattern.compile("(secteur[s]? )", Pattern.CASE_INSENSITIVE);
-
 	private static final Pattern SERVICE = Pattern.compile("(service) ([a|p]m)", Pattern.CASE_INSENSITIVE);
 	private static final String SERVICE_REPLACEMENT = "$2";
-
-	private static final Pattern POINT = Pattern.compile("(point)", Pattern.CASE_INSENSITIVE);
-	private static final String POINT_REPLACEMENT = "Pt";
 
 	@NotNull
 	@Override
 	public String cleanTripHeadsign(@NotNull String tripHeadsign) {
-		tripHeadsign = DIRECTION_.matcher(tripHeadsign).replaceAll(EMPTY);
-		tripHeadsign = SECTEUR_.matcher(tripHeadsign).replaceAll(EMPTY);
 		tripHeadsign = SERVICE.matcher(tripHeadsign).replaceAll(SERVICE_REPLACEMENT);
-		tripHeadsign = POINT.matcher(tripHeadsign).replaceAll(POINT_REPLACEMENT);
+		tripHeadsign = CleanUtils.keepToFR(tripHeadsign);
+		tripHeadsign = CleanUtils.cleanStreetTypesFRCA(tripHeadsign);
 		tripHeadsign = CleanUtils.cleanStreetTypesFRCA(tripHeadsign);
 		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
@@ -212,8 +148,8 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public String cleanStopName(@NotNull String gStopName) {
 		gStopName = AVENUE.matcher(gStopName).replaceAll(AVENUE_REPLACEMENT);
-		gStopName = Utils.replaceAll(gStopName, START_WITH_FACES, CleanUtils.SPACE);
-		gStopName = Utils.replaceAll(gStopName, SPACE_FACES, CleanUtils.SPACE);
+		gStopName = RegexUtils.replaceAllNN(gStopName, START_WITH_FACES, CleanUtils.SPACE);
+		gStopName = RegexUtils.replaceAllNN(gStopName, SPACE_FACES, CleanUtils.SPACE);
 		gStopName = CleanUtils.cleanStreetTypesFRCA(gStopName);
 		return CleanUtils.cleanLabelFR(gStopName);
 	}
@@ -246,62 +182,94 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public int getStopId(@NotNull GStop gStop) {
-		String stopCode = getStopCode(gStop);
-		if (stopCode.length() > 0 && Utils.isDigitsOnly(stopCode)) {
+		final String stopCode = getStopCode(gStop);
+		if (stopCode.length() > 0 && CharUtils.isDigitsOnly(stopCode)) {
 			return Integer.parseInt(stopCode); // using stop code as stop ID
 		}
 		//noinspection deprecation
-		String stopIds = gStop.getStopId();
-		stopIds = CleanUtils.cleanMergedID(stopIds);
-		stopIds = stopIds.toUpperCase(Locale.ENGLISH);
-		Matcher matcher = DIGITS.matcher(stopIds);
+		final String stopIds = CleanUtils.cleanMergedID(gStop.getStopId()).toUpperCase(Locale.ENGLISH);
+		final Matcher matcher = DIGITS.matcher(stopIds);
 		if (matcher.find()) {
-			int digits = Integer.parseInt(matcher.group());
+			final String digitS = matcher.group();
+			final int digits = Integer.parseInt(digitS);
 			int stopId;
-			if (stopIds.startsWith(DDO)) {
+			final String beforeDigits = stopIds.substring(0, stopIds.indexOf(digitS));
+			switch (beforeDigits) {
+			case EMPTY:
+				stopId = 0;
+				break;
+			case DDO:
 				stopId = 100_000;
-			} else if (stopIds.startsWith(HUD)) {
+				break;
+			case HUD:
 				stopId = 200_000;
-			} else if (stopIds.startsWith(LIP)) {
+				break;
+			case LIP:
 				stopId = 300_000;
-			} else if (stopIds.startsWith(NIP)) {
+				break;
+			case NIP:
 				stopId = 400_000;
-			} else if (stopIds.startsWith(PCL)) {
+				break;
+			case PCL:
 				stopId = 500_000;
-			} else if (stopIds.startsWith(PIN)) {
+				break;
+			case PIN:
 				stopId = 600_000;
-			} else if (stopIds.startsWith(RIG)) {
+				break;
+			case RIG:
 				stopId = 700_000;
-			} else if (stopIds.startsWith(SAB)) {
+				break;
+			case SAB:
 				stopId = 800_000;
-			} else if (stopIds.startsWith(SGV)) {
+				break;
+			case SGV:
 				stopId = 900_000;
-			} else if (stopIds.startsWith(SLR)) {
+				break;
+			case SLR:
 				stopId = 1_000_000;
-			} else if (stopIds.startsWith(SLZ)) {
+				break;
+			case SLZ:
 				stopId = 1_100_000;
-			} else if (stopIds.startsWith(VAU)) {
+				break;
+			case VAU:
 				stopId = 1_200_000;
-			} else {
+				break;
+			case "MITIPI":
+				stopId = 1_300_000;
+				break;
+			default:
 				throw new MTLog.Fatal("Stop doesn't have an ID (start with)! %s!", gStop);
 			}
-			if (stopIds.endsWith(A)) {
+			final String afterDigits = stopIds.substring(stopIds.indexOf(digitS) + digitS.length());
+			switch (afterDigits) {
+			case EMPTY:
+				// stopId += 0;
+				break;
+			case A:
 				stopId += 1_000;
-			} else if (stopIds.endsWith(B)) {
+				break;
+			case B:
 				stopId += 2_000;
-			} else if (stopIds.endsWith(C)) {
+				break;
+			case C:
 				stopId += 3_000;
-			} else if (stopIds.endsWith(D)) {
+				break;
+			case D:
 				stopId += 4_000;
-			} else if (stopIds.endsWith(E)) {
+				break;
+			case E:
 				stopId += 5_000;
-			} else if (stopIds.endsWith(F)) {
+				break;
+			case F:
 				stopId += 6_000;
-			} else if (stopIds.endsWith(G)) {
+				break;
+			case G:
 				stopId += 7_000;
-			} else if (stopIds.endsWith(H)) {
+				break;
+			case H:
 				stopId += 8_000;
-			} else {
+				break;
+			default:
 				throw new MTLog.Fatal("Stop doesn't have an ID (end with)! %s!", gStop);
 			}
 			return stopId + digits;
