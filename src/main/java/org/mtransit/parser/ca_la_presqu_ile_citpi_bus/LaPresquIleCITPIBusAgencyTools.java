@@ -70,9 +70,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final String F = "F";
 	private static final String G = "G";
 	private static final String H = "H";
+	private static final String T = "T";
 
 	private static final long RID_ENDS_WITH_A = 1_000L;
 	private static final long RID_ENDS_WITH_B = 2_000L;
+
+	private static final long RID_STARTS_WITH_T = 20_000L;
 
 	@Override
 	public long getRouteId(@NotNull GRoute gRoute) {
@@ -80,13 +83,16 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 			final Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
 			if (matcher.find()) {
 				final int digits = Integer.parseInt(matcher.group());
+				if (gRoute.getRouteShortName().startsWith(T)) {
+					return RID_STARTS_WITH_T + digits;
+				}
 				if (gRoute.getRouteShortName().endsWith(A)) {
 					return RID_ENDS_WITH_A + digits;
 				} else if (gRoute.getRouteShortName().endsWith(B)) {
 					return RID_ENDS_WITH_B + digits;
 				}
 			}
-			throw new MTLog.Fatal("Unexpected route ID for %s!", gRoute);
+			throw new MTLog.Fatal("Unexpected route ID for %s!", gRoute.toStringPlus());
 		}
 		return Long.parseLong(gRoute.getRouteShortName());
 	}
