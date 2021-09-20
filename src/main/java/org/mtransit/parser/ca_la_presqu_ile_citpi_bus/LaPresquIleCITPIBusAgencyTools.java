@@ -1,21 +1,20 @@
 package org.mtransit.parser.ca_la_presqu_ile_citpi_bus;
 
+import static org.mtransit.commons.Constants.EMPTY;
+import static org.mtransit.commons.RegexUtils.DIGITS;
+
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mtransit.commons.CharUtils;
 import org.mtransit.commons.CleanUtils;
 import org.mtransit.commons.RegexUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
-import org.mtransit.parser.gtfs.data.GRoute;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.mt.data.MAgency;
 
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.mtransit.parser.Constants.EMPTY;
 
 // https://exo.quebec/en/about/open-data
 // https://exo.quebec/xdata/citpi/google_transit.zip
@@ -42,6 +41,11 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return MAgency.ROUTE_TYPE_BUS;
 	}
 
+	@Override
+	public boolean defaultRouteLongNameEnabled() {
+		return true;
+	}
+
 	@NotNull
 	@Override
 	public String cleanRouteLongName(@NotNull String routeLongName) {
@@ -50,16 +54,24 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabel(routeLongName);
 	}
 
-	private static final String _40_RSN = "A40";
-	private static final String RSN_40 = "40";
+	private static final Pattern FIX_A40_ = Pattern.compile("(^40$)");
+	private static final String FIX_A40_REPLACEMENT = "A40";
 
-	@Nullable
+	@NotNull
 	@Override
-	public String getRouteShortName(@NotNull GRoute gRoute) {
-		if (RSN_40.equals(gRoute.getRouteShortName())) {
-			return _40_RSN;
-		}
-		return super.getRouteShortName(gRoute);
+	public String cleanRouteShortName(@NotNull String routeShortName) {
+		routeShortName = FIX_A40_.matcher(routeShortName).replaceAll(FIX_A40_REPLACEMENT);
+		return super.cleanRouteShortName(routeShortName);
+	}
+
+	@Override
+	public boolean defaultRouteIdEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean useRouteShortNameForRouteId() {
+		return true;
 	}
 
 	private static final String A = "A";
@@ -70,39 +82,10 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 	private static final String F = "F";
 	private static final String G = "G";
 	private static final String H = "H";
-	private static final String T = "T";
-
-	private static final long RID_ENDS_WITH_A = 1_000L;
-	private static final long RID_ENDS_WITH_B = 2_000L;
-
-	private static final long RID_STARTS_WITH_T = 20_000L;
 
 	@Override
-	public long getRouteId(@NotNull GRoute gRoute) {
-		if (!CharUtils.isDigitsOnly(gRoute.getRouteShortName())) {
-			final Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-			if (matcher.find()) {
-				final int digits = Integer.parseInt(matcher.group());
-				if (gRoute.getRouteShortName().startsWith(T)) {
-					return RID_STARTS_WITH_T + digits;
-				}
-				if (gRoute.getRouteShortName().endsWith(A)) {
-					return RID_ENDS_WITH_A + digits;
-				} else if (gRoute.getRouteShortName().endsWith(B)) {
-					return RID_ENDS_WITH_B + digits;
-				}
-			}
-			throw new MTLog.Fatal("Unexpected route ID for %s!", gRoute.toStringPlus());
-		}
-		return Long.parseLong(gRoute.getRouteShortName());
-	}
-
-	private static final String AGENCY_COLOR = "1F1F1F"; // DARK GRAY (from GTFS)
-
-	@NotNull
-	@Override
-	public String getAgencyColor() {
-		return AGENCY_COLOR;
+	public boolean defaultAgencyColorEnabled() {
+		return true;
 	}
 
 	@Override
@@ -147,13 +130,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	private static final Pattern[] SPACE_FACES = new Pattern[]{SPACE_FACE_A, SPACE_WITH_FACE_AU, SPACE_WITH_FACE};
 
-	private static final Pattern AVENUE = Pattern.compile("( avenue)", Pattern.CASE_INSENSITIVE);
-	private static final String AVENUE_REPLACEMENT = " av.";
+	private static final Pattern DEVANT_ = CleanUtils.cleanWordsFR("devant");
 
 	@NotNull
 	@Override
 	public String cleanStopName(@NotNull String gStopName) {
-		gStopName = AVENUE.matcher(gStopName).replaceAll(AVENUE_REPLACEMENT);
+		gStopName = DEVANT_.matcher(gStopName).replaceAll(EMPTY);
 		gStopName = RegexUtils.replaceAllNN(gStopName, START_WITH_FACES, CleanUtils.SPACE);
 		gStopName = RegexUtils.replaceAllNN(gStopName, SPACE_FACES, CleanUtils.SPACE);
 		gStopName = CleanUtils.cleanStreetTypesFRCA(gStopName);
@@ -170,8 +152,6 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		}
 		return super.getStopCode(gStop);
 	}
-
-	private static final Pattern DIGITS = Pattern.compile("[\\d]+");
 
 	private static final String DDO = "DDO";
 	private static final String HUD = "HUD";
