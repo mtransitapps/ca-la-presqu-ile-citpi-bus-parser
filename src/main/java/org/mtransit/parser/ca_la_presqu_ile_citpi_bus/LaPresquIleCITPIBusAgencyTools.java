@@ -174,6 +174,9 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		}
 		//noinspection deprecation
 		final String stopIds = CleanUtils.cleanMergedID(gStop.getStopId()).toUpperCase(Locale.ENGLISH);
+		if ("PItE22".equalsIgnoreCase(stopIds)) {
+			return 9_000_000;
+		}
 		final Matcher matcher = DIGITS.matcher(stopIds);
 		if (matcher.find()) {
 			final String digitS = matcher.group();
