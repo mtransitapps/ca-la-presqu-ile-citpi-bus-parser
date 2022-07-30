@@ -17,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // https://exo.quebec/en/about/open-data
-// https://exo.quebec/xdata/citpi/google_transit.zip
 public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(@NotNull String[] args) {
