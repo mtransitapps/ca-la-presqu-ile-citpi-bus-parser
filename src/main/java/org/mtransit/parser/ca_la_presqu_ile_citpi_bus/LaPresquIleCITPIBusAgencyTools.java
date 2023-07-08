@@ -9,6 +9,7 @@ import org.mtransit.commons.CleanUtils;
 import org.mtransit.commons.RegexUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
+import org.mtransit.parser.gtfs.data.GRoute;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.mt.data.MAgency;
 
@@ -73,6 +74,12 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		return true;
 	}
 
+	@NotNull
+	@Override
+	public String getRouteShortName(@NotNull GRoute gRoute) {
+		return gRoute.getRouteShortName(); // used by GTFS-RT
+	}
+
 	private static final String A = "A";
 	private static final String B = "B";
 	private static final String C = "C";
@@ -94,13 +101,13 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 
 	@NotNull
 	@Override
-	public String cleanDirectionHeadsign(boolean fromStopName, @NotNull String directionHeadSign) {
+	public String cleanDirectionHeadsign(int directionId, boolean fromStopName, @NotNull String directionHeadSign) {
 		if (directionHeadSign.endsWith("AM")) {
 			return "AM";
 		} else if (directionHeadSign.endsWith("PM")) {
 			return "PM";
 		}
-		directionHeadSign = super.cleanDirectionHeadsign(fromStopName, directionHeadSign);
+		directionHeadSign = super.cleanDirectionHeadsign(directionId, fromStopName, directionHeadSign);
 		return directionHeadSign;
 	}
 
@@ -149,7 +156,8 @@ public class LaPresquIleCITPIBusAgencyTools extends DefaultAgencyTools {
 		if (ZERO.equals(gStop.getStopCode())) {
 			return EMPTY;
 		}
-		return super.getStopCode(gStop);
+		//noinspection deprecation
+		return gStop.getStopId(); // used by GTFS-RT
 	}
 
 	private static final String DDO = "DDO";
